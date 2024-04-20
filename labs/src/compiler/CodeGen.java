@@ -8,9 +8,11 @@ import java.util.List;
 
 
 import ast.*;
+import symbols.Env;
 import target.*;
 import values.BoolValue;
 import values.IntValue;
+import values.Value;
 
 
 public class CodeGen implements Exp.Visitor<Void> {
@@ -19,45 +21,45 @@ public class CodeGen implements Exp.Visitor<Void> {
 	
 	
 	@Override
-	public Void visit(ASTInt i) {
+	public Void visit(ASTInt i,Env<Value> env) {
 		block.addInstruction(new SIPush(i.value) );
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTAdd e) {
-		e.arg1.accept(this);
-		e.arg2.accept(this);
+	public Void visit(ASTAdd e,Env<Value> env) {
+		e.arg1.accept(this,env);
+		e.arg2.accept(this,env);
 		block.addInstruction(new IAdd());
 	    return null;
 	}
 
 	@Override
-	public Void visit(ASTMult e) {
-	    e.arg1.accept(this);
-	    e.arg2.accept(this);
+	public Void visit(ASTMult e,Env<Value> env) {
+	    e.arg1.accept(this,env);
+	    e.arg2.accept(this,env);
 	    block.addInstruction(new IMul());
 		return null;
 	}
 
 
-	public Void visit(ASTDiv e) {
-		e.arg1.accept(this);
-		e.arg2.accept(this);
+	public Void visit(ASTDiv e,Env<Value> env) {
+		e.arg1.accept(this,env);
+		e.arg2.accept(this,env);
 		block.addInstruction(new IDiv());
 	    return null;
 	}
 
 	@Override
-	public Void visit(ASTSub e) {
-		e.arg1.accept(this);
-		e.arg2.accept(this);
+	public Void visit(ASTSub e,Env<Value> env) {
+		e.arg1.accept(this,env);
+		e.arg2.accept(this,env);
 		block.addInstruction(new ISub());
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTBool e) {
+	public Void visit(ASTBool e,Env<Value> env) {
 		if (e.value) {
 			block.addInstruction(new IBoolPush());
 		} else {
@@ -67,8 +69,8 @@ public class CodeGen implements Exp.Visitor<Void> {
 	}
 
 	@Override
-	public Void visit(ASTBoolNegate e) {
-		if (!((BoolValue)e.eval()).getValue()) {
+	public Void visit(ASTBoolNegate e,Env<Value> env) {
+		if (!((BoolValue)e.eval(env)).getValue()) {
 			block.addInstruction(new IBoolPush());
 		} else {
 			block.addInstruction(new NegativeIBool());
@@ -77,58 +79,70 @@ public class CodeGen implements Exp.Visitor<Void> {
 	}
 
 	@Override
-	public Void visit(ASTEqual e) {
+	public Void visit(ASTEqual e,Env<Value> env) {
 		//TODO
-		this.visit(new ASTSub(e.arg1, e.arg2));
+		this.visit(new ASTSub(e.arg1, e.arg2),env);
 		block.addInstruction(new IBoolPush());
 		block.addInstruction(new NegativeIBool());
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTLess e) {
+	public Void visit(ASTLess e,Env<Value> env) {
 		//TODO
-		block.addInstruction(new ILess(((IntValue)e.arg1.eval()).getValue() - ((IntValue)e.arg2.eval()).getValue() ));
+		block.addInstruction(new ILess(((IntValue)e.arg1.eval(env)).getValue() - ((IntValue)e.arg2.eval(env)).getValue() ));
 		block.addInstruction(new IBoolPush());
 		block.addInstruction(new NegativeIBool());
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTGreater e) {
+	public Void visit(ASTGreater e,Env<Value> env) {
 		//TODO
-		block.addInstruction(new IGreater(((IntValue)e.arg1.eval()).getValue() - ((IntValue)e.arg2.eval()).getValue() ));
+		block.addInstruction(new IGreater(((IntValue)e.arg1.eval(env)).getValue() - ((IntValue)e.arg2.eval(env)).getValue() ));
 		block.addInstruction(new IBoolPush());
 		block.addInstruction(new NegativeIBool());
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTNotEqual e) {
+	public Void visit(ASTNotEqual e,Env<Value> env) {
 		//TODO
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTAnd e) {
-		e.arg1.accept(this);
-		e.arg2.accept(this);
+	public Void visit(ASTAnd e,Env<Value> env) {
+		e.arg1.accept(this,env);
+		e.arg2.accept(this,env);
 		block.addInstruction(new IAnd());
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTOr e) {
-		e.arg1.accept(this);
-		e.arg2.accept(this);
+	public Void visit(ASTOr e,Env<Value> env) {
+		e.arg1.accept(this,env);
+		e.arg2.accept(this,env);
 		block.addInstruction(new IOr());
 		return null;
 	}
 
+	@Override
+	public Void visit(ASTLet e, Env<Value> env) {
+		//TODO
+		return null;
+	}
 
-	public static BasicBlock codeGen(Exp e) {
+	@Override
+	public Void visit(ASTVar e,Env<Value> env) {
+		//TODO
+		return null;
+	}
+
+
+	public static BasicBlock codeGen(Exp e, Env<Value> env) {
 		CodeGen cg = new CodeGen();
-		e.accept(cg);
+		e.accept(cg,env);
 		return cg.block;
 	}
 	
@@ -164,8 +178,8 @@ public class CodeGen implements Exp.Visitor<Void> {
 	}
 
 	
-	public static void writeToFile(Exp e, String filename) throws FileNotFoundException {
-	    StringBuilder sb = genPreAndPost(codeGen(e));
+	public static void writeToFile(Exp e, String filename, Env<Value> env) throws FileNotFoundException {
+	    StringBuilder sb = genPreAndPost(codeGen(e,env));
 	    PrintStream out = new PrintStream(new FileOutputStream(filename));
 	    out.print(sb.toString());
 	    out.close();

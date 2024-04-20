@@ -10,20 +10,22 @@ import compiler.*;
 import interpreter.*;
 import ast.*;
 import parser.Parser;
+import symbols.Env;
 import target.BasicBlock;
+import values.Value;
 
 public class Console {
 
 	@SuppressWarnings("static-access")
 	public static void main(String args[]) {
 		Parser parser = new Parser(System.in);
-
+		Env<Value> env = new Env<Value>();
 		while (true) {
 			try {
 				Exp e = parser.Start();
 				System.out.println("Parse OK!" );
-				System.out.println(Interpreter.interpret(e));
-				CodeGen.writeToFile(e,"output.j");
+				System.out.println(Interpreter.interpret(e,env));
+				//CodeGen.writeToFile(e,"output.j");
 
 			} catch (TokenMgrError e) {
 				System.out.println("Lexical Error!");
@@ -33,9 +35,7 @@ public class Console {
 				System.out.println("Syntax Error!");
 				e.printStackTrace();
 				parser.ReInit(System.in);
-			} catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+			}
         }
 	}
 

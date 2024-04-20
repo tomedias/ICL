@@ -1,5 +1,6 @@
 package ast;
 
+import symbols.Env;
 import values.BoolValue;
 import values.Value;
 
@@ -13,12 +14,12 @@ public class ASTNotEqual implements Exp {
     }
 
     @Override
-    public Value eval() {
-        return new BoolValue(!arg1.eval().equals(arg2.eval()));
+    public Value eval(Env<Value> env) {
+        return new BoolValue(!arg1.eval(env).equals(arg2.eval(env)));
     }
 
     @Override
-    public <T> T accept(Exp.Visitor<T> v) {
-        return v.visit(this);
+    public <T> T accept(Visitor<T> v,Env<Value> env) {
+        return v.visit(this,env);
     }
 }

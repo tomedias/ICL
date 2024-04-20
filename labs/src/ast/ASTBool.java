@@ -1,4 +1,5 @@
 package ast;
+import symbols.Env;
 import values.BoolValue;
 import values.Value;
 public class ASTBool implements Exp{
@@ -9,12 +10,12 @@ public class ASTBool implements Exp{
     }
 
     @Override
-    public Value eval() {
+    public Value eval(Env<Value> env) {
         return new BoolValue(value);
     }
 
     @Override
-    public <T> T accept(Visitor<T> v) {
-        return v.visit(this);
+    public <T> T accept(Visitor<T> v,Env<Value> env) {
+        return v.visit(this,env);
     }
 }

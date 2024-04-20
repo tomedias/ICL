@@ -1,5 +1,6 @@
 package ast;
 
+import symbols.Env;
 import values.BoolValue;
 import values.IntValue;
 import values.Value;
@@ -14,12 +15,12 @@ public class ASTLess implements Exp{
     }
 
     @Override
-    public Value eval() {
-        return new BoolValue(((IntValue)arg1.eval()).getValue() < ((IntValue)arg2.eval()).getValue());
+    public Value eval(Env<Value> env) {
+        return new BoolValue(((IntValue)arg1.eval(env)).getValue() < ((IntValue)arg2.eval(env)).getValue());
     }
 
     @Override
-    public <T> T accept(Exp.Visitor<T> v) {
-        return v.visit(this);
+    public <T> T accept(Visitor<T> v,Env<Value> env) {
+        return v.visit(this,env);
     }
 }

@@ -1,5 +1,6 @@
 package ast;
 
+import symbols.Env;
 import values.BoolValue;
 import values.Value;
 
@@ -10,13 +11,13 @@ public class ASTBoolNegate implements Exp {
         this.value = value;
     }
     @Override
-    public Value eval() {
-        BoolValue var = (BoolValue)value.eval();
+    public Value eval(Env<Value> env) {
+        BoolValue var = (BoolValue)value.eval(env);
         return new BoolValue(!var.getValue());
     }
 
     @Override
-    public <T> T accept(Visitor<T> v) {
-        return v.visit(this);
+    public <T> T accept(Visitor<T> v,Env<Value> env) {
+        return v.visit(this,env);
     }
 }

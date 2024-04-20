@@ -1,5 +1,6 @@
 package ast;
 
+import symbols.Env;
 import values.IntValue;
 import values.Value;
 
@@ -11,12 +12,12 @@ public class ASTInt implements Exp {
     }
 
     @Override
-    public Value eval() {
+    public Value eval(Env<Value> env) {
         return new IntValue(value);
     }
 
     @Override
-    public <T> T accept(Visitor<T> v) {
-        return v.visit(this);
+    public <T> T accept(Visitor<T> v,Env<Value> env) {
+        return v.visit(this,env);
     }
 }
