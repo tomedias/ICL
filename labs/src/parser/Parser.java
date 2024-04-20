@@ -21,7 +21,7 @@ public class Parser implements ParserConstants {
       while (true) {
         x = jj_consume_token(ID);
         jj_consume_token(ATTR);
-        e1 = logic();
+        e1 = decl();
         label_2:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -34,7 +34,7 @@ public class Parser implements ParserConstants {
           }
           jj_consume_token(EL);
         }
-                                               bindings.add(new ASTBinding(x.image, e1));
+                                              bindings.add(new ASTBinding(x.image, e1));
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case ID:
           ;
@@ -58,7 +58,7 @@ public class Parser implements ParserConstants {
         jj_consume_token(EL);
       }
       e2 = decl();
-                                                                                                                        {if (true) return new ASTLet(bindings, e2);}
+                                                                                                                       {if (true) return new ASTLet(bindings, e2);}
       break;
     case NEGATION:
     case Num:
@@ -168,12 +168,12 @@ public class Parser implements ParserConstants {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case PLUS:
         jj_consume_token(PLUS);
-        e2 = Term();
+        e2 = Expr();
                             e1 = new ASTAdd(e1,e2);
         break;
       case MINUS:
         jj_consume_token(MINUS);
-        e2 = Term();
+        e2 = Expr();
                              e1 = new ASTSub(e1,e2);
         break;
       default:
@@ -199,12 +199,12 @@ public class Parser implements ParserConstants {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case TIMES:
         jj_consume_token(TIMES);
-        e2 = Fact();
+        e2 = Term();
                              e1 = new ASTMult(e1,e2);
         break;
       case DIV:
         jj_consume_token(DIV);
-        e2 = Fact();
+        e2 = Term();
                            e1 = new ASTDiv(e1,e2);
         break;
       default:

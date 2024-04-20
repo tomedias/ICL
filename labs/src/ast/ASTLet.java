@@ -19,7 +19,7 @@ public class ASTLet implements Exp{
 
         Env<Value> current = prev.beginScope();
         for (ASTBinding binding : bindings) {
-            Value v1 = binding.eval(prev);
+            Value v1 = binding.eval(current);
             current.bind(binding.var, v1);
         }
         return e2.eval(current);

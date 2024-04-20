@@ -38,7 +38,10 @@ public class Env<T> {
     }
 
     public Env<T> endScope() {
-        table.clear();
+        if(prev == null) {
+            return null;
+        }
+        table = prev.table;
         return this;
     }
 

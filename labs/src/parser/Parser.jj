@@ -60,7 +60,7 @@ Exp Start():
 Exp decl():
 { Token x; Exp e1, e2; ArrayList<ASTBinding> bindings = new ArrayList<ASTBinding>();}
 {
-  <LET> (x = <ID> <ATTR> e1 = logic() (<EL>)* {bindings.add(new ASTBinding(x.image, e1));})+ <IN> (<EL>)* e2 = decl() { return new ASTLet(bindings, e2); }
+  <LET> (x = <ID> <ATTR> e1 = decl() (<EL>)* {bindings.add(new ASTBinding(x.image, e1));})+ <IN> (<EL>)* e2 = decl() { return new ASTLet(bindings, e2); }
   | e1 = logic() { return e1; }
 }
 
@@ -88,8 +88,8 @@ Exp Expr() :
 { Exp e1, e2; }
 {
    e1 = Term() 
-     [ <PLUS> e2 = Term() { e1 = new ASTAdd(e1,e2); }
-     | <MINUS> e2 = Term() { e1 = new ASTSub(e1,e2); } ]
+     [ <PLUS> e2 = Expr() { e1 = new ASTAdd(e1,e2); }
+     | <MINUS> e2 = Expr() { e1 = new ASTSub(e1,e2); } ]
      { return e1; }
 }
 
@@ -97,8 +97,8 @@ Exp Term() :
 { Exp e1, e2; }
 {
      e1 = Fact()
-     [ <TIMES> e2 = Fact() { e1 = new ASTMult(e1,e2); }
-     | <DIV> e2 = Fact() { e1 = new ASTDiv(e1,e2); } ]
+     [ <TIMES> e2 = Term() { e1 = new ASTMult(e1,e2); }
+     | <DIV> e2 = Term() { e1 = new ASTDiv(e1,e2); } ]
      { return e1; }
 }
 
