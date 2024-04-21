@@ -60,7 +60,7 @@ Exp Start():
 Exp decl():
 { Token x; Exp e1, e2; ArrayList<ASTBinding> bindings = new ArrayList<ASTBinding>();}
 {
-  <LET> (x = <ID> <ATTR> e1 = decl() (<EL>)* {bindings.add(new ASTBinding(x.image, e1));})+ <IN> (<EL>)* e2 = decl() { return new ASTLet(bindings, e2); }
+  <LET> (x = <ID> <ATTR> e1 = decl() (<EL>)* {bindings.add(new ASTBinding(new ASTVar(x.image), e1));})+ <IN> (<EL>)* e2 = decl() { return new ASTLet(bindings, e2); }
   | e1 = logic() { return e1; }
 }
 

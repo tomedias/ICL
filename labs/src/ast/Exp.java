@@ -2,31 +2,36 @@ package ast;
 
 
 import symbols.Env;
+import types.Type;
+import types.TypingException;
 import values.Value;
 
 public interface Exp {
-	public interface Visitor<T> {
-		public T visit(ASTInt i,Env<Value> env);
-		public T visit(ASTAdd e,Env<Value> env);
-		public T visit(ASTMult e,Env<Value> env);
-		public T visit(ASTDiv e,Env<Value> env);
-		public T visit(ASTSub e,Env<Value> env);
-		public T visit(ASTBool e,Env<Value> env);
-		public T visit(ASTBoolNegate e,Env<Value> env);
-		public T visit(ASTEqual e,Env<Value> env);
-		public T visit(ASTLess e,Env<Value> env);
-		public T visit(ASTGreater e,Env<Value> env);
-		public T visit(ASTNotEqual e,Env<Value> env);
-		public T visit(ASTAnd e,Env<Value> env);
-		public T visit(ASTOr e,Env<Value> env);
-		public T visit(ASTLet e,Env<Value> env);
-		public T visit(ASTVar e,Env<Value> env);
-
+	public interface Visitor<T,E> {
+		public T visit(ASTInt i,E env);
+		public T visit(ASTAdd e,E env) throws TypingException;
+		public T visit(ASTMult e,E env) throws TypingException;
+		public T visit(ASTDiv e,E env) throws TypingException;
+		public T visit(ASTSub e,E env) throws TypingException;
+		public T visit(ASTBool e,E env);
+		public T visit(ASTBoolNegate e,E env) throws TypingException;
+		public T visit(ASTEqual e,E env) throws TypingException;
+		public T visit(ASTLess e,E env) throws TypingException;
+		public T visit(ASTGreater e,E env) throws TypingException;
+		public T visit(ASTNotEqual e,E env) throws TypingException;
+		public T visit(ASTAnd e,E env) throws TypingException;
+		public T visit(ASTOr e,E env) throws TypingException;
+		public T visit(ASTLet e,E env) throws TypingException;
+		public T visit(ASTVar e,E env) throws TypingException;
+		public T visit(ASTBinding e, E env) throws TypingException;
 	}
 	
     public Value eval(Env<Value> env);
 
-	public <T> T accept(Visitor<T> v,Env<Value> env);
+	public <T,E> T accept(Visitor<T,E> v,E env) throws TypingException;
+
+
+
 
 
 	

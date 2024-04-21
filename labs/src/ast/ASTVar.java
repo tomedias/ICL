@@ -1,6 +1,8 @@
 package ast;
 
 import symbols.Env;
+import types.Type;
+import types.TypingException;
 import values.Value;
 
 public class ASTVar implements Exp{
@@ -18,12 +20,13 @@ public class ASTVar implements Exp{
     }
 
     @Override
-    public <T> T accept(Visitor<T> visitor,Env<Value> env) {
+    public <T,E> T accept(Visitor<T,E> visitor,E env) throws TypingException {
         return visitor.visit(this,env);
     }
 
+
     @Override
     public String toString() {
-        return var;
+        return var  ;
     }
 }

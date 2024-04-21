@@ -1,5 +1,8 @@
 package ast;
 import symbols.Env;
+import types.IntType;
+import types.Type;
+import types.TypingException;
 import values.IntValue;
 import values.Value;
 public class ASTAdd implements Exp{
@@ -17,7 +20,7 @@ public class ASTAdd implements Exp{
     }
 
     @Override
-    public <T> T accept(Visitor<T> v,Env<Value> env) {
+    public <T,E> T accept(Visitor<T,E> v,E env) throws TypingException {
         return v.visit(this,env);
     }
 

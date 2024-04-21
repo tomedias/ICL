@@ -1,13 +1,15 @@
 package ast;
 
 import symbols.Env;
+import types.Type;
+import types.TypingException;
 import values.Value;
 
 public class ASTBinding implements Exp{
-    public String var;
+    public ASTVar var;
     public Exp e1;
 
-    public ASTBinding(String var, Exp e1) {
+    public ASTBinding(ASTVar var, Exp e1) {
         this.var = var;
         this.e1 = e1;
     }
@@ -15,13 +17,15 @@ public class ASTBinding implements Exp{
     @Override
     public Value eval(Env<Value> prev) {
         Env<Value> current = prev.beginScope();
-        current.bind(var, e1.eval(prev));
+        current.bind(var.var, e1.eval(prev));
         return e1.eval(current);
     }
 
 
     @Override
-    public <T> T accept(Visitor<T> v, Env<Value> env) {
-        return null;
+    public <T,E> T accept(Visitor<T,E> v, E env) throws TypingException {
+        return v.visit(this,env);
     }
+
+
 }

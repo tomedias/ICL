@@ -34,7 +34,7 @@ public class Parser implements ParserConstants {
           }
           jj_consume_token(EL);
         }
-                                              bindings.add(new ASTBinding(x.image, e1));
+                                              bindings.add(new ASTBinding(new ASTVar(x.image), e1));
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case ID:
           ;
@@ -58,7 +58,7 @@ public class Parser implements ParserConstants {
         jj_consume_token(EL);
       }
       e2 = decl();
-                                                                                                                       {if (true) return new ASTLet(bindings, e2);}
+                                                                                                                                   {if (true) return new ASTLet(bindings, e2);}
       break;
     case NEGATION:
     case Num:

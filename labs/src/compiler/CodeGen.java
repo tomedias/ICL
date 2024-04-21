@@ -10,12 +10,13 @@ import java.util.List;
 import ast.*;
 import symbols.Env;
 import target.*;
+import types.TypingException;
 import values.BoolValue;
 import values.IntValue;
 import values.Value;
 
 
-public class CodeGen implements Exp.Visitor<Void> {
+public class CodeGen implements Exp.Visitor<Void,Env<Value>> {
 	
 	BasicBlock block = new BasicBlock();
 	
@@ -27,7 +28,7 @@ public class CodeGen implements Exp.Visitor<Void> {
 	}
 
 	@Override
-	public Void visit(ASTAdd e,Env<Value> env) {
+	public Void visit	(ASTAdd e,Env<Value> env) throws TypingException {
 		e.arg1.accept(this,env);
 		e.arg2.accept(this,env);
 		block.addInstruction(new IAdd());
@@ -35,7 +36,7 @@ public class CodeGen implements Exp.Visitor<Void> {
 	}
 
 	@Override
-	public Void visit(ASTMult e,Env<Value> env) {
+	public Void visit(ASTMult e,Env<Value> env) throws TypingException {
 	    e.arg1.accept(this,env);
 	    e.arg2.accept(this,env);
 	    block.addInstruction(new IMul());
@@ -43,7 +44,7 @@ public class CodeGen implements Exp.Visitor<Void> {
 	}
 
 
-	public Void visit(ASTDiv e,Env<Value> env) {
+	public Void visit(ASTDiv e,Env<Value> env) throws TypingException {
 		e.arg1.accept(this,env);
 		e.arg2.accept(this,env);
 		block.addInstruction(new IDiv());
@@ -51,7 +52,7 @@ public class CodeGen implements Exp.Visitor<Void> {
 	}
 
 	@Override
-	public Void visit(ASTSub e,Env<Value> env) {
+	public Void visit(ASTSub e,Env<Value> env) throws TypingException {
 		e.arg1.accept(this,env);
 		e.arg2.accept(this,env);
 		block.addInstruction(new ISub());
@@ -79,7 +80,7 @@ public class CodeGen implements Exp.Visitor<Void> {
 	}
 
 	@Override
-	public Void visit(ASTEqual e,Env<Value> env) {
+	public Void visit(ASTEqual e,Env<Value> env) throws TypingException {
 		//TODO
 		this.visit(new ASTSub(e.arg1, e.arg2),env);
 		block.addInstruction(new IBoolPush());
@@ -108,7 +109,7 @@ public class CodeGen implements Exp.Visitor<Void> {
 	}
 
 	@Override
-	public Void visit(ASTAnd e,Env<Value> env) {
+	public Void visit(ASTAnd e,Env<Value> env) throws TypingException {
 		e.arg1.accept(this,env);
 		e.arg2.accept(this,env);
 		block.addInstruction(new IAnd());
@@ -116,7 +117,7 @@ public class CodeGen implements Exp.Visitor<Void> {
 	}
 
 	@Override
-	public Void visit(ASTOr e,Env<Value> env) {
+	public Void visit(ASTOr e,Env<Value> env) throws TypingException {
 		e.arg1.accept(this,env);
 		e.arg2.accept(this,env);
 		block.addInstruction(new IOr());
@@ -135,8 +136,13 @@ public class CodeGen implements Exp.Visitor<Void> {
 		return null;
 	}
 
+	@Override
+	public Void visit(ASTBinding e, Env<Value> env) throws TypingException {
+		return null;
+	}
 
-	public static BasicBlock codeGen(Exp e, Env<Value> env) {
+
+	public static BasicBlock codeGen(Exp e, Env<Value> env) throws TypingException {
 		CodeGen cg = new CodeGen();
 		e.accept(cg,env);
 		return cg.block;
@@ -174,7 +180,7 @@ public class CodeGen implements Exp.Visitor<Void> {
 	}
 
 	
-	public static void writeToFile(Exp e, String filename, Env<Value> env) throws FileNotFoundException {
+	public static void writeToFile(Exp e, String filename, Env<Value> env) throws FileNotFoundException, TypingException {
 	    StringBuilder sb = genPreAndPost(codeGen(e,env));
 	    PrintStream out = new PrintStream(new FileOutputStream(filename));
 	    out.print(sb.toString());
