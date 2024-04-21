@@ -19,14 +19,14 @@ public class Console {
 	@SuppressWarnings("static-access")
 	public static void main(String args[]) {
 		Parser parser = new Parser(System.in);
-		Env<Value> env = new Env<Value>();
+		Env<Value> env = new Env<>();
+		env.bind("xpto", new values.IntValue(10));
 		while (true) {
 			try {
 				Exp e = parser.Start();
 				System.out.println("Parse OK!" );
 				System.out.println(Interpreter.interpret(e,env));
 				//CodeGen.writeToFile(e,"output.j");
-
 			} catch (TokenMgrError e) {
 				System.out.println("Lexical Error!");
 				e.printStackTrace();

@@ -48,8 +48,8 @@ public class ParserTester {
 		testCase("11 == 22\n");
 		testCase("3*5 != 1+2 == true\n");
 		testCase("1 == 2 && 3 == 4\n");
-		//testCase("1 == 2 || 3 == 4 && xpto \n");
-		//testCase("!(1 == 2) && xpto \n");
+		testCase("1 == 2 || 3 == 4 && xpto \n");
+		testCase("!(1 == 2) && xpto \n");
 		testNegativeCase("< 11\n");
 		testNegativeCase("11 >\n");
 		testNegativeCase("<= 11\n");

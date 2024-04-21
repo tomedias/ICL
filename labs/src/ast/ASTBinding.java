@@ -19,9 +19,6 @@ public class ASTBinding implements Exp{
         return e1.eval(current);
     }
 
-    public String getVar() {
-        return var;
-    }
 
     @Override
     public <T> T accept(Visitor<T> v, Env<Value> env) {

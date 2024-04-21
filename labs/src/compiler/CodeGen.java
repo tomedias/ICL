@@ -90,18 +90,14 @@ public class CodeGen implements Exp.Visitor<Void> {
 	@Override
 	public Void visit(ASTLess e,Env<Value> env) {
 		//TODO
-		block.addInstruction(new ILess(((IntValue)e.arg1.eval(env)).getValue() - ((IntValue)e.arg2.eval(env)).getValue() ));
-		block.addInstruction(new IBoolPush());
-		block.addInstruction(new NegativeIBool());
+
 		return null;
 	}
 
 	@Override
 	public Void visit(ASTGreater e,Env<Value> env) {
 		//TODO
-		block.addInstruction(new IGreater(((IntValue)e.arg1.eval(env)).getValue() - ((IntValue)e.arg2.eval(env)).getValue() ));
-		block.addInstruction(new IBoolPush());
-		block.addInstruction(new NegativeIBool());
+
 		return null;
 	}
 

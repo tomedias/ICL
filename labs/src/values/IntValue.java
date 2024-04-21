@@ -1,5 +1,8 @@
 package values;
 
+import types.BoolType;
+import types.Type;
+
 public class IntValue implements Value {
 	private int value;
 	
@@ -19,6 +22,10 @@ public class IntValue implements Value {
 	@Override
 	public boolean equals(Object obj) {
 		return obj instanceof IntValue && value == ((IntValue)obj).getValue();
+	}
+
+	public Type getType(){
+		return BoolType.singleton;
 	}
 
 	

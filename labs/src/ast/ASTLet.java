@@ -6,8 +6,8 @@ import symbols.Env;
 import java.util.ArrayList;
 
 public class ASTLet implements Exp{
-    private ArrayList<ASTBinding> bindings;
-    private Exp e2;
+    public ArrayList<ASTBinding> bindings;
+    public Exp e2;
 
     public ASTLet(ArrayList<ASTBinding> bindings, Exp e2) {
         this.bindings = bindings;

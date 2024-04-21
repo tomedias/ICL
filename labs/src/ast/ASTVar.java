@@ -1,12 +1,11 @@
 package ast;
 
 import symbols.Env;
-import values.StrValue;
 import values.Value;
 
 public class ASTVar implements Exp{
-    private String var;
-    private Env<Value> env;
+    public String var;
+    public Env<Value> env;
 
     public ASTVar(String var) {
         this.var = var;

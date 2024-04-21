@@ -11,6 +11,10 @@ public class ASTInt implements Exp {
         this.value = value;
     }
 
+    public int getValue() {
+        return value;
+    }
+
     @Override
     public Value eval(Env<Value> env) {
         return new IntValue(value);
@@ -20,4 +24,6 @@ public class ASTInt implements Exp {
     public <T> T accept(Visitor<T> v,Env<Value> env) {
         return v.visit(this,env);
     }
+
+
 }
