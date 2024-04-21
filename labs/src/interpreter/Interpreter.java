@@ -46,22 +46,22 @@ public class Interpreter implements Exp.Visitor<Value,Env<Value>> {
 
 	@Override
 	public BoolValue visit(ASTEqual e,Env<Value> env) throws TypingException {
-		return new BoolValue((e.arg1.accept(this, env)).equals(e.arg1.accept(this, env)));
+		return new BoolValue((e.arg1.accept(this, env)).equals(e.arg2.accept(this, env)));
 	}
 
 	@Override
 	public BoolValue visit(ASTLess e,Env<Value> env) throws TypingException {
-		return new BoolValue(((IntValue)(e.arg1.accept(this, env))).getValue() < ((IntValue)(e.arg1.accept(this, env))).getValue());
+		return new BoolValue(((IntValue)(e.arg1.accept(this, env))).getValue() < ((IntValue)(e.arg2.accept(this, env))).getValue());
 	}
 
 	@Override
 	public BoolValue visit(ASTGreater e,Env<Value> env) throws TypingException {
-		return new BoolValue(((IntValue)(e.arg1.accept(this, env))).getValue() > ((IntValue)(e.arg1.accept(this, env))).getValue());
+		return new BoolValue(((IntValue)(e.arg1.accept(this, env))).getValue() > ((IntValue)(e.arg2.accept(this, env))).getValue());
 	}
 
 	@Override
 	public BoolValue visit(ASTNotEqual e,Env<Value> env) throws TypingException {
-		return new BoolValue(!(e.arg1.accept(this, env)).equals(e.arg1.accept(this, env)));
+		return new BoolValue(!(e.arg1.accept(this, env)).equals(e.arg2.accept(this, env)));
 	}
 
 	@Override
