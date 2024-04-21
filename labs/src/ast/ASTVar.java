@@ -11,7 +11,6 @@ public class ASTVar implements Exp{
 
     public ASTVar(String var) {
         this.var = var;
-
     }
 
     @Override
