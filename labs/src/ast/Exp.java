@@ -24,6 +24,7 @@ public interface Exp {
 		public T visit(ASTLet e,E env) throws TypingException;
 		public T visit(ASTVar e,E env) throws TypingException;
 		public T visit(ASTBinding e, E env) throws TypingException;
+		public T visit(ASTAssign e, E env) throws TypingException;
 	}
 	
     public Value eval(Env<Value> env);
