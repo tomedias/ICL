@@ -3,7 +3,7 @@ package TypeChecker;
 import ast.*;
 import symbols.Env;
 import types.*;
-import values.Value;
+
 
 public class TypeChecker implements Exp.Visitor<Type,Env<Type>>{
     @Override
@@ -13,32 +13,40 @@ public class TypeChecker implements Exp.Visitor<Type,Env<Type>>{
 
     @Override
     public Type visit(ASTAdd e, Env<Type> env) throws TypingException {
-        if(e.arg1.accept(this, env) != IntType.singleton || e.arg2.accept(this, env) != IntType.singleton){
-            throw new TypingException("Type error: expected IntType");
+        Type arg1 = e.arg1.accept(this, env);
+        Type arg2 = e.arg2.accept(this, env);
+        if(arg1 != IntType.singleton || arg1!=arg2){
+            throw new TypingException(String.format("Operator cannot be applied to %s, %s",arg1.toString(),arg2.toString()));
         }
         return IntType.singleton;
     }
 
     @Override
     public Type visit(ASTMult e, Env<Type> env) throws TypingException {
-        if(e.arg1.accept(this, env) != IntType.singleton || e.arg2.accept(this, env) != IntType.singleton){
-            throw new TypingException("Type error: expected IntType");
+        Type arg1 = e.arg1.accept(this, env);
+        Type arg2 = e.arg2.accept(this, env);
+        if(arg1 != IntType.singleton || arg1!=arg2){
+            throw new TypingException(String.format("Operator cannot be applied to %s, %s",arg1.toString(),arg2.toString()));
         }
         return IntType.singleton;
     }
 
     @Override
     public Type visit(ASTDiv e, Env<Type> env) throws TypingException {
-        if(e.arg1.accept(this, env) != IntType.singleton || e.arg2.accept(this, env) != IntType.singleton){
-            throw new TypingException("Type error: expected IntType");
+        Type arg1 = e.arg1.accept(this, env);
+        Type arg2 = e.arg2.accept(this, env);
+        if(arg1 != IntType.singleton || arg1!=arg2){
+            throw new TypingException(String.format("Operator cannot be applied to %s, %s",arg1.toString(),arg2.toString()));
         }
         return IntType.singleton;
     }
 
     @Override
     public Type visit(ASTSub e, Env<Type> env) throws TypingException {
-        if(e.arg1.accept(this, env) != IntType.singleton || e.arg2.accept(this, env) != IntType.singleton){
-            throw new TypingException("Type error: expected IntType");
+        Type arg1 = e.arg1.accept(this, env);
+        Type arg2 = e.arg2.accept(this, env);
+        if(arg1 != IntType.singleton || arg1!=arg2){
+            throw new TypingException(String.format("Operator cannot be applied to %s, %s",arg1.toString(),arg2.toString()));
         }
         return IntType.singleton;
     }
@@ -50,8 +58,9 @@ public class TypeChecker implements Exp.Visitor<Type,Env<Type>>{
 
     @Override
     public Type visit(ASTBoolNegate e, Env<Type> env) throws TypingException {
-        if(e.arg1.accept(this, env) != BoolType.singleton ){
-            throw new TypingException("Type error: expected IntType");
+        Type arg1 = e.arg1.accept(this, env);
+        if(arg1 != BoolType.singleton ){
+            throw new TypingException(String.format("Operator cannot be applied to %s",arg1.toString());
         }
         return BoolType.singleton;
     }
@@ -70,7 +79,7 @@ public class TypeChecker implements Exp.Visitor<Type,Env<Type>>{
     public Type visit(ASTLess e, Env<Type> env) throws TypingException {
         Type arg1 = e.arg1.accept(this, env);
         Type arg2 = e.arg2.accept(this, env);
-        if(arg1 != IntType.singleton || arg2 != IntType.singleton){
+        if(arg1 != IntType.singleton || arg1 != arg2){
             throw new TypingException(String.format("Operator cannot be applied to %s, %s",arg1.toString(),arg2.toString()));
         }
         return BoolType.singleton;
@@ -80,7 +89,7 @@ public class TypeChecker implements Exp.Visitor<Type,Env<Type>>{
     public Type visit(ASTGreater e, Env<Type> env) throws TypingException {
         Type arg1 = e.arg1.accept(this, env);
         Type arg2 = e.arg2.accept(this, env);
-        if(arg1 != IntType.singleton || arg2 != IntType.singleton){
+        if(arg1 != IntType.singleton || arg1 != arg2){
             throw new TypingException(String.format("Operator cannot be applied to %s, %s",arg1.toString(),arg2.toString()));
         }
         return BoolType.singleton;
@@ -98,16 +107,20 @@ public class TypeChecker implements Exp.Visitor<Type,Env<Type>>{
 
     @Override
     public Type visit(ASTAnd e, Env<Type> env) throws TypingException {
-        if(e.arg1.accept(this, env) != BoolType.singleton || e.arg2.accept(this, env) != BoolType.singleton){
-            throw new TypingException("Type error: expected IntType");
+        Type arg1 = e.arg1.accept(this, env);
+        Type arg2 = e.arg2.accept(this, env);
+        if(arg1 != BoolType.singleton || arg1 != arg2){
+            throw new TypingException(String.format("Operator cannot be applied to %s, %s",arg1.toString(),arg2.toString()));
         }
         return BoolType.singleton;
     }
 
     @Override
     public Type visit(ASTOr e, Env<Type> env) throws TypingException {
-        if(e.arg1.accept(this, env) != BoolType.singleton || e.arg2.accept(this, env) != BoolType.singleton){
-            throw new TypingException("Type error: expected IntType");
+        Type arg1 = e.arg1.accept(this, env);
+        Type arg2 = e.arg2.accept(this, env);
+        if(arg1 != BoolType.singleton || arg1 != arg2){
+            throw new TypingException(String.format("Operator cannot be applied to %s, %s",arg1.toString(),arg2.toString()));
         }
         return BoolType.singleton;
     }
@@ -132,10 +145,9 @@ public class TypeChecker implements Exp.Visitor<Type,Env<Type>>{
     public Type visit(ASTBinding e, Env<Type> env) throws TypingException {
         Type type = e.e1.accept(this, env);
         env.bind(e.var.var,type);
-        if(e.var.accept(this,env) != type){
-            throw new TypingException("Type error: expected IntType");
-        }
-
+        //if(e.var.accept(this,env) != type){
+          //  throw new TypingException(String.format("Operator cannot be applied to %s, %s",arg1.toString(),arg2.toString()));
+        //}
         return type;
     }
 

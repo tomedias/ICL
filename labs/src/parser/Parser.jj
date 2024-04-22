@@ -41,6 +41,11 @@ TOKEN :  /*Operators*/
 | < LET: "let" >
 | < IN: "in" >
 | < ATTR: "=" >
+| < DOTCOMMA : ";" >
+| < TWODOTS : ":" >
+| < ASSIGN: ":=" >
+| < DEREFERENCE: "!" >
+| < NEW: "new" >
 }
 
 TOKEN :
@@ -125,6 +130,16 @@ Exp Fact() :
     return new ASTInt(- (Integer.parseInt(x.image)));
  }
 |
+ <DEREFERENCE> e = Fact()
+{
+  return new ASTDereference(e)
+}
+|
+ <NEW> e = logic()
+{
+  return new ASTReference(e)
+}
+|
   <LPAR> e = decl() <RPAR>
 {
  return e;
@@ -134,10 +149,35 @@ Exp Fact() :
 {
  return new ASTBoolNegate(e);
 }
-
-
+|
+  e = RefExp()
+{
+  return e
+}
 
 }
+
+Exp RefExp():
+{Exp e1;e2;}
+{
+  e1 = Value() <ASSIGN> e2 = logic()
+{
+  return new ASTAssign(e1,e2);
+}
+
+}
+
+Exp Value():
+ {
+    Exp t;
+    Token id;
+ }
+ {
+    id = <Id> { return new ASTVar(id.image); }
+    | <LPAR> t = logic() <RPAR> { return t; }
+ }
+ 
+
 
 
 
