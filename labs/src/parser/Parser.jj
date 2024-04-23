@@ -28,7 +28,6 @@ TOKEN :  /*Operators*/
 | < LESS: "<" >
 | < GREATER: ">" >
 | < EQUAL: "==" >
-| < NEGATION: "!" >
 | < NOT_EQUAL: "!=" >
 | < Num: (["0"-"9"]) + >
 | < Bool: "true" | "false" >
@@ -92,7 +91,7 @@ Exp boolOP():
 Exp Expr() :
 { Exp e1, e2; }
 {
-   e1 = Term() 
+   e1 = Term()
      [ <PLUS> e2 = Expr() { e1 = new ASTAdd(e1,e2); }
      | <MINUS> e2 = Expr() { e1 = new ASTSub(e1,e2); } ]
      { return e1; }
@@ -120,62 +119,36 @@ Exp Fact() :
     return new ASTBool(Boolean.parseBoolean(x.image));
 }
 |
-   x = <ID>
+   x = <ID> (<ASSIGN> e = decl()
+             {
+              return new ASTAssign(new ASTVar(x.image),e);
+             })?
 {
     return new ASTVar(x.image);
 }
 |
   <MINUS> x = <Num>
 {
-    return new ASTInt(- (Integer.parseInt(x.image)));
+    return new ASTInt(-(Integer.parseInt(x.image)));
  }
 |
  <DEREFERENCE> e = Fact()
 {
-  return new ASTDereference(e)
+  return new ASTDereference(e);
 }
 |
- <NEW> e = logic()
+ <NEW> e = decl()
 {
-  return new ASTReference(e)
+  return new ASTReference(e);
 }
 |
   <LPAR> e = decl() <RPAR>
 {
  return e;
 }
-|
-  <NEGATION> e = Fact()
-{
- return new ASTBoolNegate(e);
-}
-|
-  e = RefExp()
-{
-  return e
-}
 
 }
 
-Exp RefExp():
-{Exp e1;e2;}
-{
-  e1 = Value() <ASSIGN> e2 = logic()
-{
-  return new ASTAssign(e1,e2);
-}
-
-}
-
-Exp Value():
- {
-    Exp t;
-    Token id;
- }
- {
-    id = <Id> { return new ASTVar(id.image); }
-    | <LPAR> t = logic() <RPAR> { return t; }
- }
  
 
 

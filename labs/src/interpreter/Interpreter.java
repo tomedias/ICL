@@ -5,6 +5,7 @@ import symbols.Env;
 import types.TypingException;
 import values.BoolValue;
 import values.IntValue;
+import values.RefValue;
 import values.Value;
 
 
@@ -97,11 +98,30 @@ public class Interpreter implements Exp.Visitor<Value,Env<Value>> {
 		return val;
 	}
 
+	@Override
+	public Value visit(ASTAssign e, Env<Value> env) throws TypingException {
+		RefValue ref = (RefValue) e.arg2.accept(this,env);
+		var value = e.arg2.accept(this,env);
+		ref.setValue(value);
+		return value;
+
+	}
+
+	@Override
+	public Value visit(ASTReference e, Env<Value> env) throws TypingException {
+		return new RefValue(e.arg1.accept(this,env));
+	}
+
+	@Override
+	public Value visit(ASTDereference e, Env<Value> env) throws TypingException {
+		RefValue ref = (RefValue) e.arg1.accept(this,env);
+		return ref.getValue();
+	}
+
 
 	public static Value interpret(Exp e, Env<Value> env) throws TypingException {
 		Interpreter i = new Interpreter();
 		return e.accept(i,env);
-
 	}
 
 

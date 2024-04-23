@@ -6,7 +6,7 @@ import values.Value;
 
 public class ASTDereference implements Exp{
 
-    private Exp arg1;
+    public Exp arg1;
     
     public ASTDereference(Exp arg1){
         this.arg1 = arg1;
@@ -20,7 +20,7 @@ public class ASTDereference implements Exp{
 
     @Override
     public <T, E> T accept(Visitor<T, E> v, E env) throws TypingException {
-        v.visit(this,env);
+        return v.visit(this,env);
     }
     
 }

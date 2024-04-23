@@ -60,7 +60,7 @@ public class TypeChecker implements Exp.Visitor<Type,Env<Type>>{
     public Type visit(ASTBoolNegate e, Env<Type> env) throws TypingException {
         Type arg1 = e.arg1.accept(this, env);
         if(arg1 != BoolType.singleton ){
-            throw new TypingException(String.format("Operator cannot be applied to %s",arg1.toString());
+            throw new TypingException(String.format("Operator cannot be applied to %s",arg1.toString()));
         }
         return BoolType.singleton;
     }
@@ -149,6 +149,21 @@ public class TypeChecker implements Exp.Visitor<Type,Env<Type>>{
           //  throw new TypingException(String.format("Operator cannot be applied to %s, %s",arg1.toString(),arg2.toString()));
         //}
         return type;
+    }
+
+    @Override
+    public Type visit(ASTAssign e, Env<Type> env) throws TypingException {
+        return null;
+    }
+
+    @Override
+    public Type visit(ASTReference e, Env<Type> env) throws TypingException {
+        return null;
+    }
+
+    @Override
+    public Type visit(ASTDereference e, Env<Type> env) throws TypingException {
+        return null;
     }
 
     public static Type typeChecker(Exp e, Env<Type> env) throws TypingException {

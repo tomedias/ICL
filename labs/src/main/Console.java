@@ -15,7 +15,7 @@ import values.Value;
 
 public class Console {
 
-	@SuppressWarnings("static-access")
+
 	public static void main(String[] args) {
 		Parser parser = new Parser(System.in);
 		Env<Value> env = new Env<>();
@@ -25,7 +25,7 @@ public class Console {
 		while (true) {
 			try {
 				Exp e = parser.Start();
-				TypeChecker.typeChecker(e,envType);
+				//TypeChecker.typeChecker(e,envType);
 				System.out.println(Interpreter.interpret(e,env));
 				//CodeGen.writeToFile(e,"output.j");
 
