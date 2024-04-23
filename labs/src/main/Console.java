@@ -28,13 +28,10 @@ public class Console {
 				Exp e = parser.Start();
 				TypeChecker.typeChecker(e,envType);
 				System.out.println(Interpreter.interpret(e,env));
-				//CodeGen.writeToFile(e,"output.j");
-
 			} catch (TokenMgrError e) {
 				System.out.println("Lexical Error!");
 				parser.ReInit(System.in);
 			} catch (ParseException e) {
-				e.printStackTrace();
 				System.out.println("Syntax Error!");
 				parser.ReInit(System.in);
 			} catch (TypingException e) {
