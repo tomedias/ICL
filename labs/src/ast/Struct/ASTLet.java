@@ -1,13 +1,14 @@
-package ast;
+package ast.Struct;
 
-import types.Type;
+import ast.Exp;
+import ast.RefOP.ASTBinding;
 import types.TypingException;
 import values.Value;
 import symbols.Env;
 
 import java.util.ArrayList;
 
-public class ASTLet implements Exp{
+public class ASTLet implements Exp {
     public ArrayList<ASTBinding> bindings;
     public Exp e2;
 

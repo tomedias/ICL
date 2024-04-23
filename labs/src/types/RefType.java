@@ -1,9 +1,14 @@
 package types;
 
 public class RefType implements Type{
-    public static final RefType singleton = new RefType();
+
+	public Type refType;
+
+
 	
-	private RefType() {}
+	public RefType(Type type) {
+		this.refType = type;
+	}
 	
 	@Override
 	public boolean equals(Object obj) {

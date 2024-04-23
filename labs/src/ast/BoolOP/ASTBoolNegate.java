@@ -1,23 +1,21 @@
-package ast;
+package ast.BoolOP;
 
+import ast.Exp;
 import symbols.Env;
-import types.Type;
 import types.TypingException;
 import values.BoolValue;
 import values.Value;
 
-public class ASTAnd implements Exp{
+public class ASTBoolNegate implements Exp {
     public Exp arg1;
-    public Exp arg2;
 
-    public ASTAnd(Exp arg1, Exp arg2) {
+    public ASTBoolNegate(Exp arg1) {
         this.arg1 = arg1;
-        this.arg2 = arg2;
     }
-
     @Override
     public Value eval(Env<Value> env) {
-        return new BoolValue(((BoolValue)arg1.eval(env)).getValue() && ((BoolValue)arg2.eval(env)).getValue());
+        BoolValue var = (BoolValue)arg1.eval(env);
+        return new BoolValue(!var.getValue());
     }
 
     @Override

@@ -1,10 +1,10 @@
-package ast;
+package ast.NumOP;
+import ast.Exp;
 import symbols.Env;
-import types.Type;
 import types.TypingException;
 import values.BoolValue;
 import values.Value;
-public class ASTEqual implements Exp{
+public class ASTEqual implements Exp {
     public Exp arg1;
     public Exp arg2;
 

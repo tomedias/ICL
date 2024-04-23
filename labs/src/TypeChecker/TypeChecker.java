@@ -1,6 +1,16 @@
 package TypeChecker;
 
 import ast.*;
+import ast.BoolOP.ASTAnd;
+import ast.BoolOP.ASTBool;
+import ast.BoolOP.ASTBoolNegate;
+import ast.BoolOP.ASTOr;
+import ast.NumOP.*;
+import ast.RefOP.ASTAssign;
+import ast.RefOP.ASTBinding;
+import ast.RefOP.ASTDereference;
+import ast.RefOP.ASTReference;
+import ast.Struct.*;
 import symbols.Env;
 import types.*;
 
@@ -153,17 +163,49 @@ public class TypeChecker implements Exp.Visitor<Type,Env<Type>>{
 
     @Override
     public Type visit(ASTAssign e, Env<Type> env) throws TypingException {
-        return null;
+        Type typeVar = e.arg1.accept(this, env);
+        if(! (typeVar instanceof RefType) || ((RefType)typeVar).refType != e.arg2.accept(this, env)){
+            throw new TypingException("Type error: expected RefType");
+        }
+        return typeVar;
     }
 
     @Override
     public Type visit(ASTReference e, Env<Type> env) throws TypingException {
-        return null;
+        return new RefType(e.arg1.accept(this, env));
     }
 
     @Override
     public Type visit(ASTDereference e, Env<Type> env) throws TypingException {
-        return null;
+        if(!(e.arg1.accept(this, env) instanceof RefType)){
+            throw new TypingException("Type error: expected RefType");
+        }
+        return ((RefType)e.arg1.accept(this, env)).refType;
+    }
+
+    @Override
+    public Type visit(ASTDotComma e, Env<Type> env) throws TypingException {
+        return UnitType.singleton;
+    }
+
+    @Override
+    public Type visit(ASTWhile e, Env<Type> env) throws TypingException {
+        return UnitType.singleton;
+    }
+
+    @Override
+    public Type visit(ASTPrint e, Env<Type> env) throws TypingException {
+        return UnitType.singleton;
+    }
+
+    @Override
+    public Type visit(ASTPrintln e, Env<Type> env) throws TypingException {
+        return UnitType.singleton;
+    }
+
+    @Override
+    public Type visit(ASTIf e, Env<Type> env) throws TypingException {
+        return UnitType.singleton;
     }
 
     public static Type typeChecker(Exp e, Env<Type> env) throws TypingException {

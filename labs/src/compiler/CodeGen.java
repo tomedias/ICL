@@ -3,16 +3,22 @@ package compiler;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
 
 
 import ast.*;
+import ast.BoolOP.ASTAnd;
+import ast.BoolOP.ASTBool;
+import ast.BoolOP.ASTBoolNegate;
+import ast.BoolOP.ASTOr;
+import ast.NumOP.*;
+import ast.RefOP.ASTAssign;
+import ast.RefOP.ASTBinding;
+import ast.RefOP.ASTDereference;
+import ast.RefOP.ASTReference;
+import ast.Struct.*;
 import symbols.Env;
 import target.*;
 import types.TypingException;
-import values.BoolValue;
-import values.IntValue;
 import values.Value;
 
 
@@ -22,81 +28,62 @@ public class CodeGen implements Exp.Visitor<Void,Env<Value>> {
 	
 	
 	@Override
-	public Void visit(ASTInt i,Env<Value> env) {
-		block.addInstruction(new SIPush(i.value) );
+	public Void visit(ASTInt i, Env<Value> env) {
+		//TODO
 		return null;
 	}
 
 	@Override
-	public Void visit	(ASTAdd e,Env<Value> env) throws TypingException {
-		e.arg1.accept(this,env);
-		e.arg2.accept(this,env);
-		block.addInstruction(new IAdd());
+	public Void visit	(ASTAdd e, Env<Value> env) throws TypingException {
+		//TODO
 	    return null;
 	}
 
 	@Override
 	public Void visit(ASTMult e,Env<Value> env) throws TypingException {
-	    e.arg1.accept(this,env);
-	    e.arg2.accept(this,env);
-	    block.addInstruction(new IMul());
+		//TODO
 		return null;
 	}
 
 
-	public Void visit(ASTDiv e,Env<Value> env) throws TypingException {
-		e.arg1.accept(this,env);
-		e.arg2.accept(this,env);
-		block.addInstruction(new IDiv());
+	public Void visit(ASTDiv e, Env<Value> env) throws TypingException {
+		//TODO
 	    return null;
 	}
 
 	@Override
 	public Void visit(ASTSub e,Env<Value> env) throws TypingException {
-		e.arg1.accept(this,env);
-		e.arg2.accept(this,env);
-		block.addInstruction(new ISub());
+		//TODO
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTBool e,Env<Value> env) {
-		if (e.value) {
-			block.addInstruction(new IBoolPush());
-		} else {
-			block.addInstruction(new NegativeIBool());
-		}
+	public Void visit(ASTBool e, Env<Value> env) {
+		//TODO
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTBoolNegate e,Env<Value> env) {
-		if (!((BoolValue)e.eval(env)).getValue()) {
-			block.addInstruction(new IBoolPush());
-		} else {
-			block.addInstruction(new NegativeIBool());
-		}
+	public Void visit(ASTBoolNegate e, Env<Value> env) {
+		//TODO
 		return null;
 	}
 
 	@Override
 	public Void visit(ASTEqual e,Env<Value> env) throws TypingException {
 		//TODO
-		this.visit(new ASTSub(e.arg1, e.arg2),env);
-		block.addInstruction(new IBoolPush());
-		block.addInstruction(new NegativeIBool());
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTLess e,Env<Value> env) {
+	public Void visit(ASTLess e, Env<Value> env) {
 		//TODO
 
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTGreater e,Env<Value> env) {
+	public Void visit(ASTGreater e, Env<Value> env) {
 		//TODO
 
 		return null;
@@ -109,18 +96,14 @@ public class CodeGen implements Exp.Visitor<Void,Env<Value>> {
 	}
 
 	@Override
-	public Void visit(ASTAnd e,Env<Value> env) throws TypingException {
-		e.arg1.accept(this,env);
-		e.arg2.accept(this,env);
-		block.addInstruction(new IAnd());
+	public Void visit(ASTAnd e, Env<Value> env) throws TypingException {
+		//TODO
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTOr e,Env<Value> env) throws TypingException {
-		e.arg1.accept(this,env);
-		e.arg2.accept(this,env);
-		block.addInstruction(new IOr());
+	public Void visit(ASTOr e, Env<Value> env) throws TypingException {
+		//TODO
 		return null;
 	}
 
@@ -138,21 +121,55 @@ public class CodeGen implements Exp.Visitor<Void,Env<Value>> {
 
 	@Override
 	public Void visit(ASTBinding e, Env<Value> env) throws TypingException {
+		//TODO
 		return null;
 	}
 
 	@Override
 	public Void visit(ASTAssign e, Env<Value> env) throws TypingException {
+		//TODO
 		return null;
 	}
 
 	@Override
 	public Void visit(ASTReference e, Env<Value> env) throws TypingException {
+		//TODO
 		return null;
 	}
 
 	@Override
 	public Void visit(ASTDereference e, Env<Value> env) throws TypingException {
+		//TODO
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTDotComma e, Env<Value> env) throws TypingException {
+		//TODO
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTWhile e, Env<Value> env) throws TypingException {
+		//TODO
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTPrint e, Env<Value> env) throws TypingException {
+		//TODO
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTPrintln e, Env<Value> env) throws TypingException {
+		//TODO
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTIf e, Env<Value> env) throws TypingException {
+		//TODO
 		return null;
 	}
 

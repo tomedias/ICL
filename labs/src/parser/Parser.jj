@@ -5,7 +5,7 @@ options{
 PARSER_BEGIN(Parser)
 
 package parser;
-import ast.*;import symbols.Env;import java.util.ArrayList;
+import ast.*;import ast.BoolOP.ASTAnd;import ast.BoolOP.ASTBool;import ast.BoolOP.ASTOr;import ast.NumOP.*;import ast.RefOP.ASTAssign;import ast.RefOP.ASTBinding;import ast.RefOP.ASTDereference;import ast.RefOP.ASTReference;import ast.Struct.*;import java.util.ArrayList;
 
 public class Parser {
 
@@ -45,6 +45,14 @@ TOKEN :  /*Operators*/
 | < ASSIGN: ":=" >
 | < DEREFERENCE: "!" >
 | < NEW: "new" >
+| <WHILE: "while">
+| <DO: "do">
+| <END: "end">
+| <PRINT: "print">
+| <PRINTLN: "println">
+| <IF : "if">
+| <THEN : "then">
+| <ELSE : "else">
 }
 
 TOKEN :
@@ -58,14 +66,56 @@ TOKEN :
 Exp Start():
 { Exp e; }
 {
-   e = decl() <EL>  { return e; }
+   e = Semicol() <EL>  { return e; }
 }
 
+Exp Semicol():
+{ Exp e1,e2;}
+{
+   e1 = Struct() (<DOTCOMMA>  e2 = Semicol() { e1 = new ASTDotComma(e1,e2); })?
+    { return e1; }
+}
+
+Exp Struct():
+{Exp e; }
+{
+   e = decl(){ return e; }
+   |
+   e = whileDo(){ return e; }
+   |
+   e = println(){ return e; }
+   |
+   e = print(){ return e; }
+   |
+   e = logic(){ return e; }
+   |
+   e = ifThenElse(){ return e; }
+
+}
+Exp ifThenElse():
+{ Exp e1, e2, e3=null; }
+{
+  <IF> e1 = Struct() <THEN> e2 = Semicol() (<ELSE> e3 = Semicol())? <END>{ return new ASTIf(e1, e2, e3); }
+}
+Exp whileDo():
+{ Exp e1, e2; }
+{
+  <WHILE> e1 = Struct() <DO> e2 = Semicol() <END>{ return new ASTWhile(e1, e2); } //While accepts only struct as verification as semicolon return unit ()
+}
 Exp decl():
 { Token x; Exp e1, e2; ArrayList<ASTBinding> bindings = new ArrayList<ASTBinding>();}
 {
-  <LET> (x = <ID> <ATTR> e1 = decl() (<EL>)* {bindings.add(new ASTBinding(new ASTVar(x.image), e1));})+ <IN> (<EL>)* e2 = decl() { return new ASTLet(bindings, e2); }
-  | e1 = logic() { return e1; }
+  <LET> (x = <ID> <ATTR> e1 = Struct() (<EL>)* {bindings.add(new ASTBinding(new ASTVar(x.image), e1));})+ <IN> (<EL>)* e2 = Struct() { return new ASTLet(bindings, e2); }
+}
+Exp print():
+{ Exp e; }
+{
+  <PRINT> e = Struct() { return new ASTPrint(e); }
+}
+Exp println():
+{ Exp e; }
+{
+  <PRINTLN> e = Struct() { return new ASTPrintln(e); }
 }
 
 Exp logic():
@@ -92,8 +142,8 @@ Exp Expr() :
 { Exp e1, e2; }
 {
    e1 = Term()
-     [ <PLUS> e2 = Expr() { e1 = new ASTAdd(e1,e2); }
-     | <MINUS> e2 = Expr() { e1 = new ASTSub(e1,e2); } ]
+     ( <PLUS> e2 = Term() { e1 = new ASTAdd(e1,e2); }
+     | <MINUS> e2 = Term() { e1 = new ASTSub(e1,e2); } )*
      { return e1; }
 }
 
@@ -101,8 +151,8 @@ Exp Term() :
 { Exp e1, e2; }
 {
      e1 = Fact()
-     [ <TIMES> e2 = Term() { e1 = new ASTMult(e1,e2); }
-     | <DIV> e2 = Term() { e1 = new ASTDiv(e1,e2); } ]
+     ( <TIMES> e2 = Fact() { e1 = new ASTMult(e1,e2); }
+     | <DIV> e2 = Fact() { e1 = new ASTDiv(e1,e2); } )*
      { return e1; }
 }
 
@@ -119,10 +169,11 @@ Exp Fact() :
     return new ASTBool(Boolean.parseBoolean(x.image));
 }
 |
-   x = <ID> (<ASSIGN> e = decl()
-             {
-              return new ASTAssign(new ASTVar(x.image),e);
-             })?
+  x = <ID> (<ASSIGN> e = Fact()
+{
+    return new ASTAssign(new ASTVar(x.image),e);
+}
+)?
 {
     return new ASTVar(x.image);
 }
@@ -130,19 +181,19 @@ Exp Fact() :
   <MINUS> x = <Num>
 {
     return new ASTInt(-(Integer.parseInt(x.image)));
- }
+}
 |
  <DEREFERENCE> e = Fact()
 {
   return new ASTDereference(e);
 }
 |
- <NEW> e = decl()
+ <NEW> e = Fact()
 {
   return new ASTReference(e);
 }
 |
-  <LPAR> e = decl() <RPAR>
+  <LPAR> e = Semicol() <RPAR>
 {
  return e;
 }

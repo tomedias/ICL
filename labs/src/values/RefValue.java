@@ -20,7 +20,7 @@ public class RefValue implements Value{
 
 	@Override
 	public String toString() {
-		return String.valueOf(getValue());
+		return "Ref " + getValue();
 	}
 	
 	@Override
@@ -28,9 +28,6 @@ public class RefValue implements Value{
 		return obj instanceof RefValue && ((RefValue)value).getValue() == ((RefValue)obj).getValue();
 	}
 
-	public Type getType(){
-		return RefType.singleton;
-	}
 
-    
+
 }

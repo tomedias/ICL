@@ -2,7 +2,7 @@ package main;
 
 import java.io.ByteArrayInputStream;
 
-import TypeChecker.TypeChecker;
+
 import ast.Exp;
 import parser.*;
 import interpreter.*;
@@ -12,6 +12,7 @@ import types.IntType;
 import types.Type;
 import types.TypingException;
 import values.Value;
+import TypeChecker.TypeChecker;
 
 public class Console {
 
@@ -25,7 +26,7 @@ public class Console {
 		while (true) {
 			try {
 				Exp e = parser.Start();
-				//TypeChecker.typeChecker(e,envType);
+				TypeChecker.typeChecker(e,envType);
 				System.out.println(Interpreter.interpret(e,env));
 				//CodeGen.writeToFile(e,"output.j");
 
@@ -33,6 +34,7 @@ public class Console {
 				System.out.println("Lexical Error!");
 				parser.ReInit(System.in);
 			} catch (ParseException e) {
+				e.printStackTrace();
 				System.out.println("Syntax Error!");
 				parser.ReInit(System.in);
 			} catch (TypingException e) {

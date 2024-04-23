@@ -1,12 +1,19 @@
 package interpreter;
 
 import ast.*;
+import ast.BoolOP.ASTAnd;
+import ast.BoolOP.ASTBool;
+import ast.BoolOP.ASTBoolNegate;
+import ast.BoolOP.ASTOr;
+import ast.NumOP.*;
+import ast.RefOP.ASTAssign;
+import ast.RefOP.ASTBinding;
+import ast.RefOP.ASTDereference;
+import ast.RefOP.ASTReference;
+import ast.Struct.*;
 import symbols.Env;
 import types.TypingException;
-import values.BoolValue;
-import values.IntValue;
-import values.RefValue;
-import values.Value;
+import values.*;
 
 
 public class Interpreter implements Exp.Visitor<Value,Env<Value>> {
@@ -17,7 +24,7 @@ public class Interpreter implements Exp.Visitor<Value,Env<Value>> {
 	}
 
 	@Override
-	public IntValue visit(ASTAdd e,Env<Value> env) throws TypingException {
+	public IntValue visit(ASTAdd e, Env<Value> env) throws TypingException {
 		return new IntValue (((IntValue)(e.arg1.accept(this, env))).getValue() + ((IntValue)(e.arg2.accept(this, env))).getValue());
 	}
 
@@ -26,7 +33,7 @@ public class Interpreter implements Exp.Visitor<Value,Env<Value>> {
 		return new IntValue (((IntValue)(e.arg1.accept(this, env))).getValue() * ((IntValue)(e.arg2.accept(this, env))).getValue());
 	}
 	@Override
-	public IntValue visit(ASTDiv e,Env<Value> env) throws TypingException {
+	public IntValue visit(ASTDiv e, Env<Value> env) throws TypingException {
 		return new IntValue (((IntValue)(e.arg1.accept(this, env))).getValue() / ((IntValue)(e.arg2.accept(this, env))).getValue());
 	}
 
@@ -36,12 +43,12 @@ public class Interpreter implements Exp.Visitor<Value,Env<Value>> {
 	}
 
 	@Override
-	public BoolValue visit(ASTBool e,Env<Value> env) {
+	public BoolValue visit(ASTBool e, Env<Value> env) {
 		return new BoolValue(e.value);
 	}
 
 	@Override
-	public BoolValue visit(ASTBoolNegate e,Env<Value> env) throws TypingException {
+	public BoolValue visit(ASTBoolNegate e, Env<Value> env) throws TypingException {
 		return new BoolValue(!((BoolValue)(e.arg1.accept(this, env))).getValue());
 	}
 
@@ -51,12 +58,12 @@ public class Interpreter implements Exp.Visitor<Value,Env<Value>> {
 	}
 
 	@Override
-	public BoolValue visit(ASTLess e,Env<Value> env) throws TypingException {
+	public BoolValue visit(ASTLess e, Env<Value> env) throws TypingException {
 		return new BoolValue(((IntValue)(e.arg1.accept(this, env))).getValue() < ((IntValue)(e.arg2.accept(this, env))).getValue());
 	}
 
 	@Override
-	public BoolValue visit(ASTGreater e,Env<Value> env) throws TypingException {
+	public BoolValue visit(ASTGreater e, Env<Value> env) throws TypingException {
 		return new BoolValue(((IntValue)(e.arg1.accept(this, env))).getValue() > ((IntValue)(e.arg2.accept(this, env))).getValue());
 	}
 
@@ -66,17 +73,17 @@ public class Interpreter implements Exp.Visitor<Value,Env<Value>> {
 	}
 
 	@Override
-	public BoolValue visit(ASTAnd e,Env<Value> env) throws TypingException {
+	public BoolValue visit(ASTAnd e, Env<Value> env) throws TypingException {
 		return new BoolValue(((BoolValue)(e.arg1.accept(this, env))).getValue() && ((BoolValue)(e.arg1.accept(this, env))).getValue());
 	}
 
 	@Override
-	public BoolValue visit(ASTOr e,Env<Value> env) throws TypingException {
+	public BoolValue visit(ASTOr e, Env<Value> env) throws TypingException {
 		return new BoolValue(((BoolValue)(e.arg1.accept(this, env))).getValue() || ((BoolValue)(e.arg1.accept(this, env))).getValue());
 	}
 
 	@Override
-	public Value visit(ASTLet e,Env<Value> env) throws TypingException {
+	public Value visit(ASTLet e, Env<Value> env) throws TypingException {
 		Env<Value> current = env.beginScope();
 		for (ASTBinding binding : e.bindings) {
 			Value v1 = binding.accept(this,current);
@@ -100,7 +107,7 @@ public class Interpreter implements Exp.Visitor<Value,Env<Value>> {
 
 	@Override
 	public Value visit(ASTAssign e, Env<Value> env) throws TypingException {
-		RefValue ref = (RefValue) e.arg2.accept(this,env);
+		RefValue ref = (RefValue) e.arg1.accept(this,env);
 		var value = e.arg2.accept(this,env);
 		ref.setValue(value);
 		return value;
@@ -118,6 +125,43 @@ public class Interpreter implements Exp.Visitor<Value,Env<Value>> {
 		return ref.getValue();
 	}
 
+	@Override
+	public Value visit(ASTDotComma e, Env<Value> env) throws TypingException {
+		e.arg1.accept(this,env);
+		e.arg2.accept(this,env);
+		return UnitValue.singleton;
+	}
+
+	@Override
+	public Value visit(ASTWhile e, Env<Value> env) throws TypingException {
+		while(((BoolValue)(e.condition.accept(this,env))).getValue()){
+			e.body.accept(this,env);
+		}
+		return UnitValue.singleton;
+	}
+
+	@Override
+	public Value visit(ASTPrint e, Env<Value> env) throws TypingException {
+		System.out.print(e.e1.accept(this,env));
+		return UnitValue.singleton;
+	}
+
+	@Override
+	public Value visit(ASTPrintln e, Env<Value> env) throws TypingException {
+		System.out.println(e.e1.accept(this,env));
+		return UnitValue.singleton;
+	}
+
+	@Override
+	public Value visit(ASTIf e, Env<Value> env) throws TypingException {
+		if(((BoolValue)(e.condition.accept(this,env))).getValue()){
+			e.thenBranch.accept(this,env);
+		}
+		else{
+			e.elseBranch.accept(this,env);
+		}
+		return UnitValue.singleton;
+	}
 
 	public static Value interpret(Exp e, Env<Value> env) throws TypingException {
 		Interpreter i = new Interpreter();

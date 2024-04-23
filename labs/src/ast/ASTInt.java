@@ -1,9 +1,6 @@
 package ast;
 
 import symbols.Env;
-import types.IntType;
-import types.Type;
-import types.TypingException;
 import values.IntValue;
 import values.Value;
 

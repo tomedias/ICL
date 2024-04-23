@@ -1,11 +1,9 @@
-package ast;
+package ast.BoolOP;
+import ast.Exp;
 import symbols.Env;
-import types.BoolType;
-import types.Type;
-import types.TypingException;
 import values.BoolValue;
 import values.Value;
-public class ASTBool implements Exp{
+public class ASTBool implements Exp {
     public boolean value;
 
     public ASTBool(boolean value) {

@@ -1,11 +1,12 @@
-package ast;
+package ast.RefOP;
 
+import ast.ASTVar;
+import ast.Exp;
 import symbols.Env;
-import types.Type;
 import types.TypingException;
 import values.Value;
 
-public class ASTBinding implements Exp{
+public class ASTBinding implements Exp {
     public ASTVar var;
     public Exp e1;
 
