@@ -18,21 +18,13 @@ public class Console {
 
 
 	public static void main(String[] args) {
-		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-
 		Parser parser = null;
-		try{
-			String filename = in.readLine();
-			System.out.println(in);
-			parser = new Parser(new BufferedReader(new FileReader(filename)));
-		}catch (IOException e) {
-			System.out.println("File not found!");
-			parser.ReInit(System.in);
-		}
-
-		Env<Value> env = new Env<>();
-		Env<Type> envType = new Env<>();
 		try {
+			BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+			String filename = in.readLine();
+			parser = new Parser(new BufferedReader(new FileReader(filename)));
+			Env<Value> env = new Env<>();
+			Env<Type> envType = new Env<>();
 			Exp e = parser.Start();
 			TypeChecker.typeChecker(e,envType);
 			System.out.println(Interpreter.interpret(e,env));
@@ -45,16 +37,11 @@ public class Console {
 		} catch (TypingException e) {
 			System.out.println(e.getMessage());
 			parser.ReInit(System.in);
+
+		}catch (IOException e) {
+			System.out.println("File not found!");
+			parser.ReInit(System.in);
 		}
 
-	}
-	public static boolean accept(String s) throws ParseException {
-		Parser parser = new Parser(new ByteArrayInputStream(s.getBytes()));
-		try {
-			parser.Start();
-			return true;
-		} catch (ParseException e) {
-			return false;
-		}
 	}
 }
