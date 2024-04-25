@@ -1,4 +1,4 @@
-#!/bin/bash
+
 cd parser
 javacc Parser.jj
 cd ..

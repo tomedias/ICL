@@ -15,15 +15,16 @@ PARSER_END(Parser)
 
 SKIP :
 {
-  " "
+ " "
+| "\n"
 | "\t"
 | "\r"
+
 }
 
 TOKEN :  /*Operators*/
 {
-< EL: "\n">
-| < AND: "&&" >
+ < AND: "&&" >
 | < OR: "||" >
 | < LESS: "<" >
 | < GREATER: ">" >
@@ -54,6 +55,7 @@ TOKEN :  /*Operators*/
 | <THEN : "then">
 | <ELSE : "else">
 | <NEGATE : "~">
+
 }
 
 TOKEN :
@@ -67,7 +69,7 @@ TOKEN :
 Exp Start():
 { Exp e; }
 {
-   e = Semicol() <EL>  { return e; }
+   e = Semicol() <EOF>  { return e; }
 }
 
 Exp Semicol():
@@ -90,8 +92,7 @@ Exp Struct():
    |
    e = ifThenElse(){ return e; }
    |
-   e = logic(){ return e; }
-   
+   e = assign() { return e; }
 
 }
 Exp ifThenElse():
@@ -107,7 +108,10 @@ Exp whileDo():
 Exp decl():
 { Token x; Exp e1, e2; ArrayList<ASTBinding> bindings = new ArrayList<ASTBinding>();}
 {
-  <LET> (x = <ID> <ATTR> e1 = Struct() (<EL>)* {bindings.add(new ASTBinding(new ASTVar(x.image), e1));})+ <IN> (<EL>)* e2 = Struct() { return new ASTLet(bindings, e2); }
+  <LET> (x = <ID> <ATTR> e1 = Struct()  {
+        bindings.add(new ASTBinding(new ASTVar(x.image), e1));
+         })+
+         <IN>  e2 = Struct() { return new ASTLet(bindings, e2); }
 }
 Exp print():
 { Exp e; }
@@ -118,6 +122,13 @@ Exp println():
 { Exp e; }
 {
   <PRINTLN> e = Struct() { return new ASTPrintln(e); }
+}
+
+Exp assign():
+{  Exp e1,e2; }
+{
+  e1 = logic() (<ASSIGN> e2 = logic() { return new ASTAssign(e1,e2); })*
+   { return e1; }
 }
 
 Exp logic():
@@ -171,11 +182,7 @@ Exp Fact() :
     return new ASTBool(Boolean.parseBoolean(x.image));
 }
 |
-  x = <ID> (<ASSIGN> e = Fact()
-{
-    return new ASTAssign(new ASTVar(x.image),e);
-}
-)?
+x = <ID>
 {
     return new ASTVar(x.image);
 }

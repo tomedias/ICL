@@ -11,8 +11,6 @@ public interface ParserConstants {
   /** End of File. */
   int EOF = 0;
   /** RegularExpression Id. */
-  int EL = 4;
-  /** RegularExpression Id. */
   int AND = 5;
   /** RegularExpression Id. */
   int OR = 6;
@@ -90,9 +88,9 @@ public interface ParserConstants {
   String[] tokenImage = {
     "<EOF>",
     "\" \"",
+    "\"\\n\"",
     "\"\\t\"",
     "\"\\r\"",
-    "\"\\n\"",
     "\"&&\"",
     "\"||\"",
     "\"<\"",

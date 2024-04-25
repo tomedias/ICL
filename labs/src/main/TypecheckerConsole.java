@@ -11,9 +11,20 @@ import types.Type;
 import types.TypingException;
 import TypeChecker.TypeChecker;
 
+import java.io.*;
+
 public class TypecheckerConsole {
-    public static void main(String[] args) {
-		Parser parser = new Parser(System.in);
+    public static void main(String[] args) throws IOException {
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+		Parser parser = null;
+		try{
+			String filename = in.readLine();
+			System.out.println(in);
+			parser = new Parser(new BufferedReader(new FileReader(filename)));
+		}catch (IOException e) {
+			System.out.println("File not found!");
+			parser.ReInit(System.in);
+		}
 		Env<Type> envType = new Env<>();
 		while (true) {
 			try {

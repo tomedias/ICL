@@ -10,9 +10,23 @@ import symbols.Env;
 import types.TypingException;
 import values.Value;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 public class InterpreterConsole {
-    public static void main(String[] args) {
-		Parser parser = new Parser(System.in);
+    public static void main(String[] args) throws IOException {
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+		Parser parser = null;
+		try{
+			String filename = in.readLine();
+			System.out.println(in);
+			parser = new Parser(new BufferedReader(new FileReader(filename)));
+		}catch (IOException e) {
+			System.out.println("File not found!");
+			parser.ReInit(System.in);
+		}
 		Env<Value> env = new Env<>();
 		while (true) {
 			try {
