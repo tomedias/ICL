@@ -21,8 +21,6 @@ public class Console {
 		Parser parser = new Parser(System.in);
 		Env<Value> env = new Env<>();
 		Env<Type> envType = new Env<>();
-		env.bind("xpto", new values.IntValue(10));
-		envType.bind("xpto", IntType.singleton);
 		while (true) {
 			try {
 				Exp e = parser.Start();

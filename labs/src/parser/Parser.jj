@@ -5,7 +5,7 @@ options{
 PARSER_BEGIN(Parser)
 
 package parser;
-import ast.*;import ast.BoolOP.ASTAnd;import ast.BoolOP.ASTBool;import ast.BoolOP.ASTOr;import ast.NumOP.*;import ast.RefOP.ASTAssign;import ast.RefOP.ASTBinding;import ast.RefOP.ASTDereference;import ast.RefOP.ASTReference;import ast.Struct.*;import java.util.ArrayList;
+import ast.*;import ast.BoolOP.ASTAnd;import ast.BoolOP.ASTBool;import ast.BoolOP.ASTBoolNegate;import ast.BoolOP.ASTOr;import ast.NumOP.*;import ast.RefOP.ASTAssign;import ast.RefOP.ASTBinding;import ast.RefOP.ASTDereference;import ast.RefOP.ASTReference;import ast.Struct.*;import java.util.ArrayList;
 
 public class Parser {
 
@@ -53,6 +53,7 @@ TOKEN :  /*Operators*/
 | <IF : "if">
 | <THEN : "then">
 | <ELSE : "else">
+| <NEGATE : "~">
 }
 
 TOKEN :
@@ -87,9 +88,10 @@ Exp Struct():
    |
    e = print(){ return e; }
    |
-   e = logic(){ return e; }
-   |
    e = ifThenElse(){ return e; }
+   |
+   e = logic(){ return e; }
+   
 
 }
 Exp ifThenElse():
@@ -191,6 +193,10 @@ Exp Fact() :
  <NEW> e = Fact()
 {
   return new ASTReference(e);
+}
+| <NEGATE> e = Fact()
+{
+  return new ASTBoolNegate(e);
 }
 |
   <LPAR> e = Semicol() <RPAR>
