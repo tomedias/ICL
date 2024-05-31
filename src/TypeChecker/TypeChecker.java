@@ -208,6 +208,11 @@ public class TypeChecker implements Exp.Visitor<Type,Env<Type>>{
         return UnitType.singleton;
     }
 
+    @Override
+    public Type visit(ASTFun e, Env<Type> env) throws TypingException {
+        return null;
+    }
+
     public static Type typeChecker(Exp e, Env<Type> env) throws TypingException {
         TypeChecker i = new TypeChecker();
         return e.accept(i,env);

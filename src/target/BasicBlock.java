@@ -7,7 +7,7 @@ public class BasicBlock {
 	
 	List<Instruction> instructions;
 
-	
+	int label_count = 0;
 	
 	public BasicBlock() {
 		
@@ -29,7 +29,16 @@ public class BasicBlock {
 		
 		return block.toString();
 	}
-	
+
+	public DelayedOp delayEmit() {
+		DelayedOp delayed = new DelayedOp(instructions.size());
+		instructions.add(new EmptyInstruction());
+		return delayed;
+	}
+	public String emitLabel() {
+		instructions.add(new ILabel(label_count++));
+		return String.format("Label%s", label_count-1);
+	}
 	public StringBuilder build() {
 		StringBuilder block = new StringBuilder(instructions.size()*5);
 		build(block);
@@ -41,8 +50,19 @@ public class BasicBlock {
 		for (Instruction i : instructions) {
 			sb.append(i + "\n");
 		}
-		
-		
+
+	}
+
+	public class DelayedOp {
+		private final int i;
+
+		private DelayedOp(int i) {
+			this.i = i;
+		}
+
+		public void set(Instruction opcode) {
+			instructions.set(i, opcode);
+		}
 	}
 	
 	

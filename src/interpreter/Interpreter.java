@@ -163,6 +163,16 @@ public class Interpreter implements Exp.Visitor<Value,Env<Value>> {
 		return UnitValue.singleton;
 	}
 
+	@Override
+	public Value visit(ASTFun e, Env<Value> env) throws TypingException {
+//		Env<Value> current = env.beginScope();
+//		for (Argument arg  : e.args) {
+//			Value v1 = arg.accept(this,current);
+//			current.bind(binding.var.var, v1);
+//		}
+		return null;
+	}
+
 	public static Value interpret(Exp e, Env<Value> env) throws TypingException {
 		Interpreter i = new Interpreter();
 		return e.accept(i,env);

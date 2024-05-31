@@ -2,13 +2,10 @@ package main;
 
 
 
-import TypeChecker.TypeChecker;
 import ast.Exp;
 import parser.*;
 import interpreter.*;
-import parser.Parser;
 import symbols.Env;
-import types.Type;
 import types.TypingException;
 import values.Value;
 

@@ -41,6 +41,7 @@ public interface Exp {
 		public T visit(ASTPrint e, E env) throws TypingException;
 		public T visit(ASTPrintln e, E env) throws TypingException;
 		public T visit(ASTIf e, E env) throws TypingException;
+		public T visit(ASTFun e, E env) throws TypingException;
 	}
 	
     public Value eval(Env<Value> env);

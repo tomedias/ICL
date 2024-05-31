@@ -5,7 +5,6 @@ package main;
 
 import ast.Exp;
 import parser.*;
-import parser.Parser;
 import symbols.Env;
 import types.Type;
 import types.TypingException;
