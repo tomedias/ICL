@@ -205,7 +205,7 @@ public class CodeGen implements Exp.Visitor<Type,Env<Value>> {
 		BasicBlock.DelayedOp loopIf = block.delayEmit();
 		Type type = e.body.accept(this, env);
 		if(type != UnitType.singleton) {
-			block.addInstruction(new IDiscard());
+			block.addInstruction(new IPop());
 		}
 		block.addInstruction(new IGoTo(loop_label));
 		String break_label = block.emitLabel();
@@ -221,50 +221,47 @@ public class CodeGen implements Exp.Visitor<Type,Env<Value>> {
 
 	@Override
 	public Type visit(ASTPrintln e, Env<Value> env) throws TypingException {
-		//TODO
-		return null;
+		Type type = e.e1.accept(this, env);
+		if(type == IntType.singleton || type == BoolType.singleton){
+			block.addInstruction(new CustomInstruction("getstatic java/lang/System/out Ljava/io/PrintStream;",null));
+			block.addInstruction(new ISwap());
+			block.addInstruction(new CustomInstruction("invokestatic java/lang/String/valueOf(I)Ljava/lang/String;",null));
+			block.addInstruction(new IPrintln());
+		}
+		else
+			throw new TypingException("Type not supported for println");
+		return UnitType.singleton;
 	}
 
 	@Override
 	public Type visit(ASTIf e, Env<Value> env) throws TypingException {
 		e.condition.accept(this,env);
 
-		BasicBlock.DelayedOp gotoElse = block.delayEmit();
-		Type ifType = e.thenBranch.accept(this,env);
-		BasicBlock.DelayedOp popIF = block.delayEmit();
-		popIF.set(new IComment(" pop if"));
-		BasicBlock.DelayedOp GOTOENDIF = block.delayEmit();
-		GOTOENDIF.set(new IComment("goto end"));
-		BasicBlock.DelayedOp goToEnd = block.delayEmit();
+		BasicBlock.DelayedOp gotoIf= block.delayEmit();
 		Type elseType =null;
 		BasicBlock.DelayedOp popElse = null;
-		BasicBlock.DelayedOp GOTOENDELSE = null;
+
 	    if(e.elseBranch != null) {
-			String else_label = block.emitLabel();
-			gotoElse.set(new IGoToIfFalse(else_label));
 			elseType = e.elseBranch.accept(this,env);
 			popElse = block.delayEmit();
 			popElse.set(new IComment(" pop else"));
-			GOTOENDELSE = block.delayEmit();
-			GOTOENDELSE.set(new IComment("goto end"));
-
-		}else{
-			gotoElse.set(new IGoToIfFalse("LabelEND"));
 		}
-		String go_if = block.emitLabel();
-		goToEnd.set(new IGoTo(go_if));
-
-		if(elseType==null && ifType == UnitType.singleton){
-			popIF.set(new IDiscard());
+		BasicBlock.DelayedOp goEnd = block.delayEmit();
+		String label = block.emitLabel();
+		gotoIf.set(new IGoToIfTrue(label));
+		Type ifType = e.thenBranch.accept(this,env);
+		BasicBlock.DelayedOp popIf = block.delayEmit();
+		popIf.set(new IComment(" pop if"));
+		String end = block.emitLabel();
+		goEnd.set(new IGoTo(end));
+		if(!ifType.equals(elseType) && !ifType.equals(UnitType.singleton)){
+			if(elseType==null){
+				popIf.set(new IPop());
+			}
+			else{
+				popElse.set(new IPop());
+			}
 		}
-
-		if(elseType!=null && ifType!=elseType){
-			popIF.set(new IDiscard());
-			popElse.set(new IDiscard());
-			GOTOENDELSE.set(new IGoTo("LabelEND"));
-			GOTOENDIF.set(new IGoTo("LabelEND"));
-		}
-
 	   return (elseType==null) || (ifType!=elseType) ?  UnitType.singleton: ifType;
 	}
 
@@ -295,13 +292,10 @@ public class CodeGen implements Exp.Visitor<Type,Env<Value>> {
 					   .limit stack 256
 					   ; setup local variables:
 					   ;    1 - the PrintStream object held in java.lang.out
-					  getstatic java/lang/System/out Ljava/io/PrintStream;					          
+										          
 				   """;
 		String footer =
 				"""
-				invokestatic java/lang/String/valueOf(I)Ljava/lang/String;
-				invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
-				LabelEND:
 				return
 				.end method
 				""";

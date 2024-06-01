@@ -1,8 +1,8 @@
 package target;
 
-public class IDiscard extends Instruction
+public class IPop extends Instruction
 {
-    public IDiscard() {
+    public IPop() {
         op = "pop";
         args = null;
     }
