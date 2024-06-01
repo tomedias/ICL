@@ -9,11 +9,11 @@ import java.util.ArrayList;
 
 public class ASTFun implements Exp{
 
-    public ArrayList<Argument> args;
+    public ArrayList<FunArgs<String,Type>> args;
     public Exp body;
     public Type returnType;
 
-    public ASTFun(ArrayList<Argument> args, Exp body, Type returnType) {
+    public ASTFun(ArrayList<FunArgs<String,Type>> args, Exp body, Type returnType) {
         this.args = args;
         this.body = body;
         this.returnType = returnType;

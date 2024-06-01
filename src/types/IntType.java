@@ -13,7 +13,7 @@ public class IntType implements Type {
 
 	@Override
 	public String toString() {
-		return "integer";
+		return "int";
 	}
 
 }

@@ -12,6 +12,7 @@ import ast.RefOP.ASTDereference;
 import ast.RefOP.ASTReference;
 import ast.Struct.*;
 import symbols.Env;
+import types.Type;
 import types.TypingException;
 import values.*;
 
@@ -165,11 +166,11 @@ public class Interpreter implements Exp.Visitor<Value,Env<Value>> {
 
 	@Override
 	public Value visit(ASTFun e, Env<Value> env) throws TypingException {
-//		Env<Value> current = env.beginScope();
-//		for (Argument arg  : e.args) {
+		Env<Value> current = env.beginScope();
+		for (FunArgs<String, Type> arg  : e.args) {
 //			Value v1 = arg.accept(this,current);
 //			current.bind(binding.var.var, v1);
-//		}
+		}
 		return null;
 	}
 

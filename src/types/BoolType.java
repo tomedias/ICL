@@ -13,6 +13,6 @@ public class BoolType implements Type {
 
 	@Override
 	public String toString() {
-		return "boolean";
+		return "bool";
 	}
 }

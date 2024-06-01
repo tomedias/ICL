@@ -17,6 +17,6 @@ public class RefType implements Type{
 
 	@Override
 	public String toString() {
-		return "reference";
+		return "ref";
 	}
 }

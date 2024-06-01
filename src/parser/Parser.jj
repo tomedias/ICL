@@ -5,7 +5,7 @@ options{
 PARSER_BEGIN(Parser)
 
 package parser;
-import ast.*;import ast.BoolOP.ASTAnd;import ast.BoolOP.ASTBool;import ast.BoolOP.ASTBoolNegate;import ast.BoolOP.ASTOr;import ast.NumOP.*;import ast.RefOP.ASTAssign;import ast.RefOP.ASTBinding;import ast.RefOP.ASTDereference;import ast.RefOP.ASTReference;import ast.Struct.*;import java.util.ArrayList;
+import ast.*;import ast.BoolOP.ASTAnd;import ast.BoolOP.ASTBool;import ast.BoolOP.ASTBoolNegate;import ast.BoolOP.ASTOr;import ast.NumOP.*;import ast.RefOP.ASTAssign;import ast.RefOP.ASTBinding;import ast.RefOP.ASTDereference;import ast.RefOP.ASTReference;import ast.Struct.*;import types.ParsingType;import types.Type;import java.util.ArrayList;import java.util.Arrays;
 
 public class Parser {
 
@@ -55,6 +55,9 @@ TOKEN :  /*Operators*/
 | <THEN : "then">
 | <ELSE : "else">
 | <NEGATE : "~">
+| <FN : "fn">
+| <ARROW : "->">
+| <COMMA : ",">
 
 }
 
@@ -210,17 +213,29 @@ x = <ID>
 {
  return e;
 }
-
-}
-
-Exp fcall():
-{Exp e;}
+|
+<FN> <LPAR>
 {
+    Arrays<FunArgs<String,Type>> args= new ArrayList<>();
+    Exp body;
+    Type type;
+    Type retType;
+}
+    x = <ID> <TWODOTS> type = Type() { args.add(new FunArgs<>(x.image,type)); }
+    ( <COMMA> x = <ID> <TWODOTS> type = Type() { args.add(new FunArgs<>(x.image,type)); } )*
+    <RPAR> <ARROW> retType = Type()  body = Semicol() <END> { return new ASTFun(args,retType,body); }
 
 }
 
- 
 
+Type Type():
+{
+    Token x;
+    Type t;
+}
+{
+    x = <ID> { return ParsingType.valueOf (x.image); }
+}
 
 
 
