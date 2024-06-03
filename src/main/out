@@ -20,17 +20,45 @@ dup
 aload_1
 putfield frame_1/SL Lframe_0;
 astore_1
-sipush 3
+new ref_int
+dup
+invokespecial ref_int/<init>()V
+dup
+sipush 5
+putfield ref_int/v I
 dup
 aload_1
 swap
-putfield frame_1/v0 I
+putfield frame_1/v0 Lref_int;
+Label0:
 aload_1
-getfield frame_1/v0 I
+getfield frame_1/v0 Lref_int;
+getfield ref_int/v I
+sipush 0
+if_icmpgt Label1
+iconst_0
+goto Label2
+Label1:
+iconst_1
+Label2:
+ifeq Label3
+aload_1
+getfield frame_1/v0 Lref_int;
+aload_1
+getfield frame_1/v0 Lref_int;
+getfield ref_int/v I
+sipush 1
+isub
+putfield ref_int/v I
+aload_1
+getfield frame_1/v0 Lref_int;
+getfield ref_int/v I
 getstatic java/lang/System/out Ljava/io/PrintStream;
 swap
 invokestatic java/lang/String/valueOf(I)Ljava/lang/String;
 invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
+goto Label0
+Label3:
 aload_1
 getfield frame_1/SL Lframe_0;
 astore_1

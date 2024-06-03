@@ -125,7 +125,7 @@ bindings.add(new ASTBinding(new ASTVar(x.image), e1));
       }
     }
     jj_consume_token(IN);
-    e2 = Struct();
+    e2 = Semicol();
     jj_consume_token(END);
 {if ("" != null) return new ASTLet(bindings, e2);}
     throw new Error("Missing return statement in function");

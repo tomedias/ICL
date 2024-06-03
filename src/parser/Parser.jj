@@ -114,7 +114,7 @@ Exp decl():
   <LET> (x = <ID> <ATTR> e1 = Struct()  {
         bindings.add(new ASTBinding(new ASTVar(x.image), e1));
          })+
-         <IN>  e2 = Struct() <END> { return new ASTLet(bindings, e2); }
+         <IN>  e2 = Semicol() <END> { return new ASTLet(bindings, e2); }
 }
 Exp print():
 { Exp e; }

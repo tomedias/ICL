@@ -23,6 +23,6 @@ public class RefType implements Type{
 
 	@Override
 	public String getJvmType() {
-		return "";
+		return "Lref_int;";
 	}
 }

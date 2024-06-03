@@ -3,8 +3,6 @@ package compiler;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-
-
 import ast.*;
 import ast.BoolOP.ASTAnd;
 import ast.BoolOP.ASTBool;
@@ -20,9 +18,6 @@ import symbols.Frame;
 import target.*;
 import types.*;
 import values.FrameValue;
-import values.Value;
-
-
 public class CodeGen implements Exp.Visitor<Type, Frame>{
 
 	BasicBlock block = new BasicBlock();
@@ -204,13 +199,13 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 		FrameValue e1 = env.find(e.var);
 		Frame x = env;
 		block.addInstruction(new ILoad("1"));
+		Type type = e1.getType();
 		while(!x.getName().equals(e1.getFrame().getName())){
 			block.addInstruction(new IGetField(x.getName(),"SL",String.format("L%s;",x.getPrev().getName())));
 			x = x.getPrev();
 		}
 		block.addInstruction(new IGetField(e1.getFrame().getName(),String.format("v%s",e1.getVar_id()),e1.getType().getJvmType()));
-		Type type = e1.getType();
-		return type;
+		return type instanceof RefType ? ((RefType)type).refType : type;
 	}
 
 	@Override
@@ -228,20 +223,28 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 
 	@Override
 	public Type visit(ASTAssign e, Frame env) throws TypingException {
-		//TODO
-		return null;
+		Type type = e.arg1.accept(this,env);
+		Type refType = e.arg2.accept(this,env);
+		block.addInstruction(new IPutField("ref_int","v","I"));
+		return type;
 	}
 
 	@Override
 	public Type visit(ASTReference e, Frame env) throws TypingException {
-		//TODO
-		return null;
+		block.addInstruction(new INew("ref_int"));
+		block.addInstruction(new IDup());
+		block.addInstruction(new IInvokeSpecial("ref_int"));
+		block.addInstruction(new IDup());
+		Type type = e.arg1.accept(this,env);
+		block.addInstruction(new IPutField("ref_int","v","I"));
+		return new RefType(type);
 	}
 
 	@Override
 	public Type visit(ASTDereference e, Frame env) throws TypingException {
-		//TODO
-		return null;
+		Type type = e.arg1.accept(this,env);
+		block.addInstruction(new IGetField("ref_int","v","I"));
+		return type;
 	}
 
 	@Override
@@ -283,6 +286,7 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 	@Override
 	public Type visit(ASTPrintln e, Frame env) throws TypingException {
 		Type type = e.e1.accept(this, env);
+		System.out.println(type.toString());
 		if(type == IntType.singleton || type == BoolType.singleton){
 			block.addInstruction(new CustomInstruction("getstatic java/lang/System/out Ljava/io/PrintStream;",null));
 			block.addInstruction(new ISwap());
@@ -395,6 +399,25 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 			e.printStackTrace();
 		}
 
+	}
+
+	public static void dump_ref_int(){
+		String dump = """
+				.class public ref_int
+				.super java/lang/Object
+				.field public v I
+				.method public <init>()V
+				aload_0
+				invokenonvirtual java/lang/Object/<init>()V
+				return
+				.end method
+				""";
+		try {
+			PrintStream out = new PrintStream(new FileOutputStream("main/ref_int.j"));
+			out.print(dump);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 
 	public static void writeToFile(Exp e, String filename, Frame env) throws FileNotFoundException, TypingException {

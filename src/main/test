@@ -1,3 +1,7 @@
-let x=3 in
-    println(x)
+let x = new 5 in
+ while( (!x) > 0)
+ do
+  x := (!x) - 1;
+  println(!x)
+end
 end

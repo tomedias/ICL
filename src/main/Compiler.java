@@ -31,9 +31,11 @@ public class Compiler {
             Frame env = new Frame(0, new ArrayList<>());
             Exp e = parser.Start();
             CodeGen.writeToFile(e,"main/out",env);
+
             for( Frame frame: env.getAllFrames()){
                 CodeGen.dumpFrames(frame, "main");
             }
+            CodeGen.dump_ref_int();
         } catch (TokenMgrError e) {
             System.out.println("Lexical Error!");
             parser.ReInit(System.in);
