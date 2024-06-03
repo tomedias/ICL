@@ -1,17 +1,25 @@
 package types;
 
 public enum ParsingType {
-    Int("int", "I" ,IntType.singleton),
-    Bool("bool", "I",BoolType.singleton),
-    Unit("unit", "V", UnitType.singleton),;
+    Int("int", IntType.singleton),
+    Bool("bool", BoolType.singleton),
+    Unit("unit",  UnitType.singleton),;
 
     private final String jvmId;
-    private final String jvmType;
     private final Type type;
 
-    ParsingType(String jvmId, String jvmType, Type type) {
+    ParsingType(String jvmId,Type type) {
         this.jvmId = jvmId;
-        this.jvmType = jvmType;
         this.type = type;
+    }
+
+    public String getJvmId() {
+        return jvmId;
+    }
+
+
+
+    public Type getType() {
+        return type;
     }
 }

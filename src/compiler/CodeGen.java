@@ -16,28 +16,25 @@ import ast.RefOP.ASTBinding;
 import ast.RefOP.ASTDereference;
 import ast.RefOP.ASTReference;
 import ast.Struct.*;
-import symbols.Env;
+import symbols.Frame;
 import target.*;
 import types.*;
+import values.FrameValue;
 import values.Value;
 
 
-public class CodeGen implements Exp.Visitor<Type,Env<Value>> {
+public class CodeGen implements Exp.Visitor<Type, Frame>{
 
 	BasicBlock block = new BasicBlock();
-	private String print = """
-			invokestatic java/lang/String/valueOf(I)Ljava/lang/String;
-				invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
-				""";
 
 	@Override
-	public Type visit(ASTInt i, Env<Value> env) {
+	public Type visit(ASTInt i, Frame env) {
 		block.addInstruction(new SIPush(i.value));
 		return IntType.singleton;
 	}
 
 	@Override
-	public Type visit(ASTAdd e, Env<Value> env) throws TypingException {
+	public Type visit(ASTAdd e, Frame env) throws TypingException {
 		e.arg1.accept(this, env);
 		e.arg2.accept(this, env);
 		block.addInstruction(new IAdd());
@@ -45,7 +42,7 @@ public class CodeGen implements Exp.Visitor<Type,Env<Value>> {
 	}
 
 	@Override
-	public Type visit(ASTMult e,Env<Value> env) throws TypingException {
+	public Type visit(ASTMult e,Frame env) throws TypingException {
 		e.arg1.accept(this, env);
 		e.arg2.accept(this, env);
 		block.addInstruction(new IMul());
@@ -53,7 +50,7 @@ public class CodeGen implements Exp.Visitor<Type,Env<Value>> {
 	}
 
 
-	public Type visit(ASTDiv e, Env<Value> env) throws TypingException {
+	public Type visit(ASTDiv e, Frame env) throws TypingException {
 		e.arg1.accept(this, env);
 		e.arg2.accept(this, env);
 		block.addInstruction(new IDiv());
@@ -61,7 +58,7 @@ public class CodeGen implements Exp.Visitor<Type,Env<Value>> {
 	}
 
 	@Override
-	public Type visit(ASTSub e,Env<Value> env) throws TypingException {
+	public Type visit(ASTSub e,Frame env) throws TypingException {
 		e.arg1.accept(this, env);
 		e.arg2.accept(this, env);
 		block.addInstruction(new ISub());
@@ -69,7 +66,7 @@ public class CodeGen implements Exp.Visitor<Type,Env<Value>> {
 	}
 
 	@Override
-	public Type visit(ASTBool e, Env<Value> env) {
+	public Type visit(ASTBool e, Frame env) {
 		if(e.value)
 			block.addInstruction(new IBoolPush());
 		else
@@ -78,13 +75,13 @@ public class CodeGen implements Exp.Visitor<Type,Env<Value>> {
 	}
 
 	@Override
-	public Type visit(ASTBoolNegate e, Env<Value> env) {
+	public Type visit(ASTBoolNegate e, Frame env) {
 		block.addInstruction(new NegativeIBool());
 		return BoolType.singleton;
 	}
 
 	@Override
-	public Type visit(ASTEqual e,Env<Value> env) throws TypingException {
+	public Type visit(ASTEqual e,Frame env) throws TypingException {
 		e.arg1.accept(this, env);
 		e.arg2.accept(this, env);
 		BasicBlock.DelayedOp gotoIf = block.delayEmit();
@@ -98,7 +95,7 @@ public class CodeGen implements Exp.Visitor<Type,Env<Value>> {
 	}
 
 	@Override
-	public Type visit(ASTLess e, Env<Value> env) throws TypingException {
+	public Type visit(ASTLess e, Frame env) throws TypingException {
 		e.arg1.accept(this, env);
 		e.arg2.accept(this, env);
 		BasicBlock.DelayedOp gotoIf = block.delayEmit();
@@ -112,7 +109,7 @@ public class CodeGen implements Exp.Visitor<Type,Env<Value>> {
 	}
 
 	@Override
-	public Type visit(ASTGreater e, Env<Value> env) throws TypingException {
+	public Type visit(ASTGreater e, Frame env) throws TypingException {
 		e.arg1.accept(this, env);
 		e.arg2.accept(this, env);
 		BasicBlock.DelayedOp gotoIf = block.delayEmit();
@@ -127,7 +124,7 @@ public class CodeGen implements Exp.Visitor<Type,Env<Value>> {
 	}
 
 	@Override
-	public Type visit(ASTNotEqual e,Env<Value> env) throws TypingException {
+	public Type visit(ASTNotEqual e,Frame env) throws TypingException {
 		e.arg1.accept(this, env);
 		e.arg2.accept(this, env);
 		BasicBlock.DelayedOp gotoIf = block.delayEmit();
@@ -141,7 +138,7 @@ public class CodeGen implements Exp.Visitor<Type,Env<Value>> {
 	}
 
 	@Override
-	public Type visit(ASTAnd e, Env<Value> env) throws TypingException {
+	public Type visit(ASTAnd e, Frame env) throws TypingException {
 		e.arg1.accept(this, env);
 		e.arg2.accept(this, env);
 		block.addInstruction(new IAnd());
@@ -149,7 +146,7 @@ public class CodeGen implements Exp.Visitor<Type,Env<Value>> {
 	}
 
 	@Override
-	public Type visit(ASTOr e, Env<Value> env) throws TypingException {
+	public Type visit(ASTOr e, Frame env) throws TypingException {
 		e.arg1.accept(this, env);
 		e.arg2.accept(this, env);
 		block.addInstruction(new IOr());
@@ -157,49 +154,100 @@ public class CodeGen implements Exp.Visitor<Type,Env<Value>> {
 	}
 
 	@Override
-	public Type visit(ASTLet e, Env<Value> env) {
+	public Type visit(ASTLet e, Frame env) throws TypingException {
+		Frame frameBlock = env.beginScope();
+		emitScope(block,frameBlock);
+		Type returnType = UnitType.singleton;
+		for(ASTBinding binding: e.bindings){
+			if(returnType != UnitType.singleton){
+				block.addInstruction(new IPop());
+			}
+			returnType = binding.accept(this,frameBlock);
+		}
+		e.e2.accept(this,frameBlock);
+		emitEndScope(block,frameBlock);
+		return returnType;
+	}
+
+	public static void emitEndScope(BasicBlock block , Frame frame){
+		if(frame.getPrev() == null){
+			block.addInstruction(new INull());
+		}else{
+			String name = frame.getName();
+			String parent = frame.getPrev().getName();
+			String parentType = String.format("L%s;",parent);
+			block.addInstruction(new ILoad("1"));
+			block.addInstruction(new IGetField(name,"SL",parentType));
+		}
+		block.addInstruction(new IStore("1"));
+	}
+
+	public static void emitScope(BasicBlock block,Frame frame){
+		String name = frame.getName();
+		String parent = frame.getPrev() == null ? "java/lang/Object" : frame.getPrev().getName();
+		String parentType = String.format("L%s;",parent);
+		initClass(block,name);
+		block.addInstruction(new IDup());
+		block.addInstruction(new ILoad("1"));
+		block.addInstruction(new IPutField(name,"SL",parentType));
+		block.addInstruction(new IStore("1"));
+	}
+
+	public static void initClass(BasicBlock block,String name){
+		block.addInstruction(new INew(name));
+		block.addInstruction(new IDup());
+		block.addInstruction(new IInvokeSpecial(name));
+	}
+
+	@Override
+	public Type visit(ASTVar e,Frame env) throws TypingException {
+		FrameValue e1 = env.find(e.var);
+		block.addInstruction(new ILoad("1"));
+		block.addInstruction(new IGetField(e1.getFrame().getName(),String.format("v%s",e1.getVar_id()),e1.getType().getJvmType()));
+		Type type = e1.getType();
+		return type;
+	}
+
+	@Override
+	public Type visit(ASTBinding e, Frame env) throws TypingException {
+		int var_id = env.getVars().size();
+		Type type = e.e1.accept(this, env);
+		FrameValue value = new FrameValue(env,var_id,type);
+		block.addInstruction(new IDup());
+		block.addInstruction(new ILoad("1"));
+		block.addInstruction(new ISwap());
+		block.addInstruction(new IPutField(env.getName(),String.format("v%s",var_id),type.getJvmType()));
+		env.bind(e.var.var,value);
+		return type;
+	}
+
+	@Override
+	public Type visit(ASTAssign e, Frame env) throws TypingException {
 		//TODO
 		return null;
 	}
 
 	@Override
-	public Type visit(ASTVar e,Env<Value> env) {
+	public Type visit(ASTReference e, Frame env) throws TypingException {
 		//TODO
 		return null;
 	}
 
 	@Override
-	public Type visit(ASTBinding e, Env<Value> env) throws TypingException {
+	public Type visit(ASTDereference e, Frame env) throws TypingException {
 		//TODO
 		return null;
 	}
 
 	@Override
-	public Type visit(ASTAssign e, Env<Value> env) throws TypingException {
-		//TODO
-		return null;
+	public Type visit(ASTDotComma e, Frame env) throws TypingException {
+		e.arg1.accept(this, env);
+		e.arg2.accept(this, env);
+		return UnitType.singleton;
 	}
 
 	@Override
-	public Type visit(ASTReference e, Env<Value> env) throws TypingException {
-		//TODO
-		return null;
-	}
-
-	@Override
-	public Type visit(ASTDereference e, Env<Value> env) throws TypingException {
-		//TODO
-		return null;
-	}
-
-	@Override
-	public Type visit(ASTDotComma e, Env<Value> env) throws TypingException {
-		//TODO
-		return null;
-	}
-
-	@Override
-	public Type visit(ASTWhile e, Env<Value> env) throws TypingException {
+	public Type visit(ASTWhile e, Frame env) throws TypingException {
 		String loop_label = block.emitLabel();
 		e.condition.accept(this, env);
 		BasicBlock.DelayedOp loopIf = block.delayEmit();
@@ -214,13 +262,21 @@ public class CodeGen implements Exp.Visitor<Type,Env<Value>> {
 	}
 
 	@Override
-	public Type visit(ASTPrint e, Env<Value> env) throws TypingException {
-		//TODO
-		return null;
+	public Type visit(ASTPrint e, Frame env) throws TypingException {
+		Type type = e.e1.accept(this, env);
+		if(type == IntType.singleton || type == BoolType.singleton){
+			block.addInstruction(new CustomInstruction("getstatic java/lang/System/out Ljava/io/PrintStream;",null));
+			block.addInstruction(new ISwap());
+			block.addInstruction(new CustomInstruction("invokestatic java/lang/String/valueOf(I)Ljava/lang/String;",null));
+			block.addInstruction(new IPrint());
+		}
+		else
+			throw new TypingException("Type not supported for println");
+		return UnitType.singleton;
 	}
 
 	@Override
-	public Type visit(ASTPrintln e, Env<Value> env) throws TypingException {
+	public Type visit(ASTPrintln e, Frame env) throws TypingException {
 		Type type = e.e1.accept(this, env);
 		if(type == IntType.singleton || type == BoolType.singleton){
 			block.addInstruction(new CustomInstruction("getstatic java/lang/System/out Ljava/io/PrintStream;",null));
@@ -234,7 +290,7 @@ public class CodeGen implements Exp.Visitor<Type,Env<Value>> {
 	}
 
 	@Override
-	public Type visit(ASTIf e, Env<Value> env) throws TypingException {
+	public Type visit(ASTIf e, Frame env) throws TypingException {
 		e.condition.accept(this,env);
 
 		BasicBlock.DelayedOp gotoIf= block.delayEmit();
@@ -266,16 +322,19 @@ public class CodeGen implements Exp.Visitor<Type,Env<Value>> {
 	}
 
 	@Override
-	public Type visit(ASTFun e, Env<Value> env) throws TypingException {
+	public Type visit(ASTFun e, Frame env) throws TypingException {
 		return null;
 	}
 
 
-	public static BasicBlock codeGen(Exp e, Env<Value> env) throws TypingException {
+	public static BasicBlock codeGen(Exp e, Frame env) throws TypingException {
 		CodeGen cg = new CodeGen();
+		env.getAllFrames().add(env);
 		e.accept(cg,env);
 		return cg.block;
 	}
+
+
 
 
 	private static StringBuilder genPreAndPost(BasicBlock block) {
@@ -290,6 +349,8 @@ public class CodeGen implements Exp.Visitor<Type,Env<Value>> {
 					  .method public static main([Ljava/lang/String;)V
 					   .limit locals 10
 					   .limit stack 256
+					   aconst_null
+				 	   astore_1
 					   ; setup local variables:
 					   ;    1 - the PrintStream object held in java.lang.out
 										          
@@ -306,9 +367,32 @@ public class CodeGen implements Exp.Visitor<Type,Env<Value>> {
 		return sb;
 
 	}
+	public static void dumpFrames(Frame frame, String file){
+		try {
+			PrintStream out = new PrintStream(new FileOutputStream(file+"/"+frame.getName()+".j"));
+			out.println(".class " + frame.getName());
+			out.println(".super java/lang/Object");
+			if(frame.getPrev()==null){
+				out.println(".field public SL L" + "java/lang/Object;");
+			}else{
+				out.println(".field public SL L" + frame.getPrev().getName() + ";");
+			}
+			for (int i = 0; i < frame.getVars().size(); i++) {
+				out.println(".field public v" + i + " " + frame.getVars().get(i).getType().getJvmType());
+			}
+			out.println(".method public <init>()V");
+			out.println("aload_0");
+			out.println("invokenonvirtual java/lang/Object/<init>()V");
+			out.println("return");
+			out.println(".end method");
+			out.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 
+	}
 
-	public static void writeToFile(Exp e, String filename, Env<Value> env) throws FileNotFoundException, TypingException {
+	public static void writeToFile(Exp e, String filename, Frame env) throws FileNotFoundException, TypingException {
 		StringBuilder sb = genPreAndPost(codeGen(e,env));
 		PrintStream out = new PrintStream(new FileOutputStream(filename));
 		out.print(sb.toString());

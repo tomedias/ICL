@@ -19,4 +19,10 @@ public class RefType implements Type{
 	public String toString() {
 		return "ref";
 	}
+
+
+	@Override
+	public String getJvmType() {
+		return "";
+	}
 }

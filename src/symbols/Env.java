@@ -3,10 +3,10 @@ package symbols;
 import java.util.Hashtable;
 import java.util.Map;
 
-public class Env<T> {
+public class Env<T>{
 
-    private Map<String,T> table;
-    private Env<T> prev;
+    protected Map<String,T> table;
+    protected Env<T> prev;
 
     public Env() {
         table = new Hashtable<>(20);
@@ -32,6 +32,9 @@ public class Env<T> {
         return null;
     }
 
+    public Env<T> getPrev() {
+        return prev;
+    }
 
     public Env<T> beginScope() {
         return new Env<T>(this);

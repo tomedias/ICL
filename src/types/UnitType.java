@@ -15,4 +15,9 @@ public class UnitType implements Type{
     public String toString() {
         return "unit";
     }
+
+    @Override
+    public String getJvmType() {
+        return "V";
+    }
 }

@@ -8,22 +8,31 @@
 .method public static main([Ljava/lang/String;)V
  .limit locals 10
  .limit stack 256
+ aconst_null
+  astore_1
  ; setup local variables:
  ;    1 - the PrintStream object held in java.lang.out
 
-sipush 2
-sipush 2
-if_icmpne Label0
-iconst_0
-goto Label1
-Label0:
-iconst_1
-Label1:
-ifne Label2
-goto Label3
-Label2:
+new frame_1
+dup
+invokespecial frame_1/<init>()V
+dup
+aload_1
+putfield frame_1/SL Lframe_0;
+astore_1
 sipush 3
-pop
-Label3:
+dup
+aload_1
+swap
+putfield frame_1/v0 I
+aload_1
+getfield frame_1/v0 I
+getstatic java/lang/System/out Ljava/io/PrintStream;
+swap
+invokestatic java/lang/String/valueOf(I)Ljava/lang/String;
+invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
+aload_1
+getfield frame_1/SL Lframe_0;
+astore_1
 return
 .end method

@@ -16,4 +16,9 @@ public class IntType implements Type {
 		return "int";
 	}
 
+	@Override
+	public String getJvmType() {
+		return "I";
+	}
+
 }

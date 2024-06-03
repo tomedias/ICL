@@ -15,4 +15,9 @@ public class BoolType implements Type {
 	public String toString() {
 		return "bool";
 	}
+
+	@Override
+	public String getJvmType() {
+		return "I";
+	}
 }
