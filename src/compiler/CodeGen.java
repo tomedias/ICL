@@ -202,7 +202,12 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 	@Override
 	public Type visit(ASTVar e,Frame env) throws TypingException {
 		FrameValue e1 = env.find(e.var);
+		Frame x = env;
 		block.addInstruction(new ILoad("1"));
+		while(!x.getName().equals(e1.getFrame().getName())){
+			block.addInstruction(new IGetField(x.getName(),"SL",String.format("L%s;",x.getPrev().getName())));
+			x = x.getPrev();
+		}
 		block.addInstruction(new IGetField(e1.getFrame().getName(),String.format("v%s",e1.getVar_id()),e1.getType().getJvmType()));
 		Type type = e1.getType();
 		return type;

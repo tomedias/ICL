@@ -1,3 +1,3 @@
 let x=3 in
-    println x
+    println(x)
 end

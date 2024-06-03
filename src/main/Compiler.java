@@ -5,16 +5,17 @@ import compiler.CodeGen;
 import parser.ParseException;
 import parser.Parser;
 import parser.TokenMgrError;
-import symbols.Env;
+
 import symbols.Frame;
-import target.BasicBlock;
+
 import types.TypingException;
-import values.Value;
+
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+
 import java.nio.file.Path;
 import java.util.ArrayList;
 
@@ -24,12 +25,14 @@ public class Compiler {
         try {
 //            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 //            String filename = in.readLine();
-            parser = new Parser(new BufferedReader(new FileReader("src/main/test")));
+            File file = new File("main/test");
+            parser = new Parser(new BufferedReader(new FileReader(file)));
+
             Frame env = new Frame(0, new ArrayList<>());
             Exp e = parser.Start();
-            CodeGen.writeToFile(e,"src/main/out",env);
+            CodeGen.writeToFile(e,"main/out",env);
             for( Frame frame: env.getAllFrames()){
-                CodeGen.dumpFrames(frame, "src/main");
+                CodeGen.dumpFrames(frame, "main");
             }
         } catch (TokenMgrError e) {
             System.out.println("Lexical Error!");
@@ -42,7 +45,7 @@ public class Compiler {
             parser.ReInit(System.in);
 
         }catch (IOException e) {
-            System.out.println("File not found!");
+            System.out.println(e.getMessage());
             parser.ReInit(System.in);
         }
 
