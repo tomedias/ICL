@@ -16,7 +16,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 
 public class Compiler {
@@ -30,13 +29,15 @@ public class Compiler {
 
             Frame env = new Frame(0, new ArrayList<>());
             Exp e = parser.Start();
-            CodeGen.writeToFile(e,"main/out",env);
+            CodeGen.writeToFile(e,"output/out.j",env);
 
             for( Frame frame: env.getAllFrames()){
-                CodeGen.dumpFrames(frame, "main");
+                CodeGen.dumpFrames(frame, "output");
             }
             CodeGen.dump_ref_int();
             CodeGen.dump_ref_ref();
+            CodeGen.dump_interfaces();
+            CodeGen.dumpFunctions();
         } catch (TokenMgrError e) {
             System.out.println("Lexical Error!");
             parser.ReInit(System.in);

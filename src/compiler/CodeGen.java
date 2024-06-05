@@ -18,7 +18,7 @@ import ast.RefOP.ASTReference;
 import ast.String.ASTString;
 import ast.Struct.*;
 import symbols.Frame;
-import symbols.FunctionInterface;
+import symbols.FunctionManager;
 import target.*;
 import types.*;
 import values.FrameValue;
@@ -357,12 +357,40 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 
 	@Override
 	public Type visit(ASTFun e, Frame env) throws TypingException {
-		return null;
+		ArrayList<Type> argTypes = new ArrayList<>();
+		for(FunArgs arg : e.args){
+			argTypes.add(arg.type());
+		}
+		FunType funType = new FunType(e.returnType,argTypes);
+		Frame functionFrame = env.beginScope();
+		for(FunArgs arg : e.args){
+			FrameValue value = new FrameValue(functionFrame,functionFrame.getVars().size(),arg.type());
+			functionFrame.bind(arg.name(),value);
+		}
+		env.endScope();
+		FunctionManager manager = FunctionManager.singleton;
+		FunctionManager.FunctionInterface functionInterface = manager.getFunctionInterface(funType);
+		funType.setInterfaceName(functionInterface.name());
+		FunctionManager.Function function = manager.addFunction(functionInterface,env,functionFrame,e.body);
+		block.addInstruction(new INew("closure_"+function.id()));
+		block.addInstruction(new IDup());
+		block.addInstruction(new IInvokeSpecial("closure_"+function.id()));
+		block.addInstruction(new IDup());
+		block.addInstruction(new ILoad("1"));
+		block.addInstruction(new IPutField("closure_"+function.id(),"SL",String.format("L%s;",env.getName())));
+		return funType;
 	}
 
 	@Override
 	public Type visit(ASTFunCall e, Frame env) throws TypingException {
-		return null;
+		Type funType = e.funName.accept(this,env);
+		for(Exp arg : e.args){
+			arg.accept(this,env);
+		}
+		FunctionManager.FunctionInterface functionInterface = FunctionManager.singleton.getFunctionInterface((FunType)funType);
+		String arg1 = String.format("closure_interface_%s/apply(%s)%s",functionInterface.name(),String.join("",functionInterface.parameterType()),functionInterface.retType());
+		block.addInstruction(new IInvokeInterface(arg1,String.valueOf(functionInterface.parameterType().size()+1)));
+		return ((FunType)funType).returnType;
 	}
 
 	@Override
@@ -434,6 +462,82 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static void dumpFunctions(){
+		for(FunctionManager.Function f : FunctionManager.singleton.getFunctions()){
+			try {
+				PrintStream out = new PrintStream(new FileOutputStream("output/"+"closure_"+f.id()+".j"));
+				String dump = String.format("""
+				.class public closure_%d
+				.super java/lang/Object
+				.implements closure_interface_%s
+				.field public SL L%s;
+				.method public <init>()V
+				aload_0
+				invokenonvirtual java/lang/Object/<init>()V
+				return
+				.end method
+				.method public apply(%s)%s
+				.limit locals %d
+				.limit stack 256
+				""",f.id(),f.functionInterface().name(),f.frame().getName(),String.join("",f.functionInterface().parameterType()),f.functionInterface().retType(), Math.max(f.functionInterface().parameterType().size()+1,10));
+				out.println(dump);
+
+				FunctionManager.FunctionInterface functionInterface = f.functionInterface();
+				StringBuilder loadParams = new StringBuilder();
+				for(int i = 0; i < functionInterface.parameterType().size(); i++){
+					String type = functionInterface.parameterType().get(i);
+					loadParams.append("dup\n");
+					if(type.equals("I")) {
+						loadParams.append(String.format("iload %d\n", i + 1));
+					}else{
+						loadParams.append(String.format("aload %d\n", i + 1));
+					}
+					loadParams.append(String.format("putfield %s/v%d %s\n", f.functionFrame().getName(), i, type));
+				}
+				loadParams.append(String.format("astore_%d",1));
+				BasicBlock block = codeGen(f.body(),f.functionFrame());
+				out.println("new "+f.functionFrame().getName());
+				out.println("dup");
+				out.println("invokespecial "+f.functionFrame().getName()+"/<init>()V");
+				out.println("dup");
+				out.println("aload_0");
+				out.println("getfield closure_"+f.id()+"/SL L"+f.frame().getName()+";");
+				out.println("putfield "+f.functionFrame().getName()+"/SL L"+f.frame().getName()+";");
+				out.println(loadParams.toString());
+				out.println(block.toString());
+				if(f.functionInterface().retType().equals("I")) {
+					out.println("ireturn");
+				}else if(f.functionInterface().retType().equals("V")){
+					out.println("return");
+				}else{
+					out.println("areturn");
+				}
+				out.print(".end method");
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (TypingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+	}
+
+	public static void dump_interfaces(){
+		for(FunctionManager.FunctionInterface f : FunctionManager.singleton.getFunctionInterfaces().values()){
+			try {
+				PrintStream out = new PrintStream(new FileOutputStream("output/"+"closure_interface_"+f.name()+".j"));
+				String dump = String.format("""
+				.interface public closure_interface_%s
+				.super java/lang/Object
+				.method public abstract apply(%s)%s
+				.end method
+				""",f.name(),String.join("",f.parameterType()),f.retType());
+				out.println(dump);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
 
 	}
 
@@ -449,7 +553,7 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 				.end method
 				""";
 		try {
-			PrintStream out = new PrintStream(new FileOutputStream("main/ref_int.j"));
+			PrintStream out = new PrintStream(new FileOutputStream("output/ref_int.j"));
 			out.print(dump);
 		}catch (Exception e){
 			e.printStackTrace();
@@ -468,7 +572,7 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 				.end method
 				""";
 		try {
-			PrintStream out = new PrintStream(new FileOutputStream("main/ref_ref.j"));
+			PrintStream out = new PrintStream(new FileOutputStream("output/ref_ref.j"));
 			out.print(dump);
 		}catch (Exception e){
 			e.printStackTrace();
