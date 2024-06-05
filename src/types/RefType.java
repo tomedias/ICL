@@ -3,9 +3,13 @@ package types;
 public class RefType implements Type{
 
 	public Type refType;
-
+	public String jvm_ref;
 
 	
+	public RefType(Type type,String jvm_ref) {
+		this.refType = type;
+		this.jvm_ref = jvm_ref;
+	}
 	public RefType(Type type) {
 		this.refType = type;
 	}
@@ -23,6 +27,6 @@ public class RefType implements Type{
 
 	@Override
 	public String getJvmType() {
-		return "Lref_int;";
+		return "L"+jvm_ref+";";
 	}
 }

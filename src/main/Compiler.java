@@ -36,7 +36,7 @@ public class Compiler {
                 CodeGen.dumpFrames(frame, "main");
             }
             CodeGen.dump_ref_int();
-            CodeGen.dumpClosures();
+            CodeGen.dump_ref_ref();
         } catch (TokenMgrError e) {
             System.out.println("Lexical Error!");
             parser.ReInit(System.in);

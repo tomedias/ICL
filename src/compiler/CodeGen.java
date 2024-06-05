@@ -229,25 +229,50 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 	public Type visit(ASTAssign e, Frame env) throws TypingException {
 		Type type = e.arg1.accept(this,env);
 		Type refType = e.arg2.accept(this,env);
-		block.addInstruction(new IPutField("ref_int","v","I"));
+		if(refType.equals(IntType.singleton) || refType.equals(BoolType.singleton)){
+			block.addInstruction(new IPutField("ref_int","v","I"));
+		}
+		else
+			block.addInstruction(new IPutField("ref_ref","v","Ljava/lang/Object;"));
 		return type;
 	}
 
 	@Override
 	public Type visit(ASTReference e, Frame env) throws TypingException {
-		block.addInstruction(new INew("ref_int"));
+		BasicBlock.DelayedOp newRef = block.delayEmit();
 		block.addInstruction(new IDup());
-		block.addInstruction(new IInvokeSpecial("ref_int"));
+		BasicBlock.DelayedOp invokespecial = block.delayEmit();
 		block.addInstruction(new IDup());
 		Type type = e.arg1.accept(this,env);
-		block.addInstruction(new IPutField("ref_int","v","I"));
-		return new RefType(type);
+		String class_name= "";
+		String field_type = "";
+		if(type == IntType.singleton || type == BoolType.singleton){
+			class_name = "ref_int";
+			field_type = "I";
+		}else{
+			class_name = "ref_ref";
+			field_type = "Ljava/lang/Object;";
+		}
+		newRef.set(new INew(class_name));
+		invokespecial.set(new IInvokeSpecial(class_name));
+		block.addInstruction(new IPutField(class_name,"v",field_type));
+		return new RefType(type,class_name);
 	}
 
 	@Override
 	public Type visit(ASTDereference e, Frame env) throws TypingException {
 		Type type = e.arg1.accept(this,env);
-		block.addInstruction(new IGetField("ref_int","v","I"));
+		System.out.println(type.toString());
+		String class_name= "";
+		String field_type = "";
+		if(type == IntType.singleton || type == BoolType.singleton){
+			class_name = "ref_int";
+			field_type = "I";
+		}else{
+			class_name = "ref_ref";
+			field_type = "Ljava/lang/Object;";
+		}
+		block.addInstruction(new IGetField(class_name,"v",field_type));
 		return type;
 	}
 
@@ -425,6 +450,25 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 				""";
 		try {
 			PrintStream out = new PrintStream(new FileOutputStream("main/ref_int.j"));
+			out.print(dump);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+
+	public static void dump_ref_ref(){
+		String dump = """
+				.class public ref_ref
+				.super java/lang/Object
+				.field public v Ljava/lang/Object;
+				.method public <init>()V
+				aload_0
+				invokenonvirtual java/lang/Object/<init>()V
+				return
+				.end method
+				""";
+		try {
+			PrintStream out = new PrintStream(new FileOutputStream("main/ref_ref.j"));
 			out.print(dump);
 		}catch (Exception e){
 			e.printStackTrace();
