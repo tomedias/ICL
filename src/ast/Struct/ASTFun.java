@@ -1,5 +1,7 @@
-package ast;
+package ast.Struct;
 
+import ast.Exp;
+import ast.FunArgs;
 import symbols.Env;
 import types.Type;
 import types.TypingException;
@@ -7,13 +9,13 @@ import values.Value;
 
 import java.util.ArrayList;
 
-public class ASTFun implements Exp{
+public class ASTFun implements Exp {
 
-    public ArrayList<FunArgs<String,Type>> args;
+    public ArrayList<FunArgs> args;
     public Exp body;
     public Type returnType;
 
-    public ASTFun(ArrayList<FunArgs<String,Type>> args, Exp body, Type returnType) {
+    public ASTFun(ArrayList<FunArgs> args, Exp body, Type returnType) {
         this.args = args;
         this.body = body;
         this.returnType = returnType;

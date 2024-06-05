@@ -10,6 +10,7 @@ import ast.RefOP.ASTAssign;
 import ast.RefOP.ASTBinding;
 import ast.RefOP.ASTDereference;
 import ast.RefOP.ASTReference;
+import ast.String.ASTString;
 import ast.Struct.*;
 import symbols.Env;
 import types.TypingException;
@@ -42,6 +43,8 @@ public interface Exp {
 		public T visit(ASTPrintln e, E env) throws TypingException;
 		public T visit(ASTIf e, E env) throws TypingException;
 		public T visit(ASTFun e, E env) throws TypingException;
+		public T visit(ASTFunCall e, E env) throws TypingException;
+		public T visit(ASTString e, E env) throws TypingException;
 	}
 	
     public Value eval(Env<Value> env);

@@ -5,7 +5,7 @@ options{
 PARSER_BEGIN(Parser)
 
 package parser;
-import ast.*;import ast.BoolOP.ASTAnd;import ast.BoolOP.ASTBool;import ast.BoolOP.ASTBoolNegate;import ast.BoolOP.ASTOr;import ast.NumOP.*;import ast.RefOP.ASTAssign;import ast.RefOP.ASTBinding;import ast.RefOP.ASTDereference;import ast.RefOP.ASTReference;import ast.Struct.*;import types.ParsingType;import types.Type;import java.util.ArrayList;import java.util.Arrays;
+import ast.*;import ast.BoolOP.ASTAnd;import ast.BoolOP.ASTBool;import ast.BoolOP.ASTBoolNegate;import ast.BoolOP.ASTOr;import ast.NumOP.*;import ast.RefOP.ASTAssign;import ast.RefOP.ASTBinding;import ast.RefOP.ASTDereference;import ast.RefOP.ASTReference;import ast.String.ASTString;import ast.Struct.*;import types.ParsingType;import types.Type;import java.util.ArrayList;
 
 public class Parser {
 
@@ -58,6 +58,7 @@ TOKEN :  /*Operators*/
 | <FN : "fn">
 | <ARROW : "->">
 | <COMMA : ",">
+| <STRING : "\"" ("\\\"" | ~["\""])* "\"" >
 
 }
 
@@ -67,6 +68,7 @@ TOKEN :
 | < #DIGIT : [ "0"-"9" ] >
 | < ID : (< LETTER >)+ >
 | < #LETTER : [ "a"-"z", "A"-"Z" ] >
+
 }
 
 Exp Start():
@@ -97,7 +99,9 @@ Exp Struct():
    |
    e = assign() { return e; }
 
+
 }
+
 Exp ifThenElse():
 { Exp e1, e2, e3=null; }
 {
@@ -173,7 +177,7 @@ Exp Term() :
 }
 
 Exp Fact() :
-{ Token x; Exp e;}
+{ Token x; Exp e,e1;ArrayList<Exp> args = new ArrayList<>();}
 {
   x = <Num>
 {
@@ -186,9 +190,16 @@ Exp Fact() :
 }
 |
 x = <ID>
+(
+<LPAR> e1 = Struct() {
+    args.add(e1);
+}
+( <COMMA> e = Struct() { args.add(e); } )* <RPAR> { return new ASTFunCall(new ASTVar(x.image),args); }
+|
 {
     return new ASTVar(x.image);
 }
+)
 |
   <MINUS> x = <Num>
 {
@@ -208,35 +219,37 @@ x = <ID>
 {
   return new ASTBoolNegate(e);
 }
+| x = <STRING>
+{
+    return new ASTString(x.image);
+}
 |
   <LPAR> e = Semicol() <RPAR>
 {
  return e;
 }
-//|
-//<FN> <LPAR>
-//{
-//    Arrays<FunArgs<String,Type>> args= new ArrayList<>();
-//    Exp body;
-//    Type type;
-//    Type retType;
-//}
-//    x = <ID> <TWODOTS> type = Type() { args.add(new FunArgs<>(x.image,type)); }
-//    ( <COMMA> x = <ID> <TWODOTS> type = Type() { args.add(new FunArgs<>(x.image,type)); } )*
-//    <RPAR> <ARROW> retType = Type()  body = Semicol() <END> { return new ASTFun(args,retType,body); }
-
+|
+<FN> <LPAR>
+{
+    ArrayList<FunArgs> params= new ArrayList<>();
+    Exp body;
+    Type type;
+    Type retType;
+}
+    x = <ID> <TWODOTS> type = Type() { params.add(new FunArgs(x.image,type)); }
+    ( <COMMA> x = <ID> <TWODOTS> type = Type() { params.add(new FunArgs(x.image,type)); } )*
+    <RPAR> <ARROW>  body = Semicol() <TWODOTS> retType=Type() <END> { return new ASTFun(params,body,retType); }
 }
 
 
-//Type Type():
-////{
-////    Token x;
-////    Type t;
-////}
-//{
-////    x = <ID> { return ParsingType.valueOf (x.image); }
-//    return UnitType.singleton;
-//}
+Type Type():
+{
+    Token x;
+}
+{
+    x = <ID> { return ParsingType.valueOf (x.image.toUpperCase()).getType(); }
+
+}
 
 
 

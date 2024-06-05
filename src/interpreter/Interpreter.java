@@ -10,11 +10,14 @@ import ast.RefOP.ASTAssign;
 import ast.RefOP.ASTBinding;
 import ast.RefOP.ASTDereference;
 import ast.RefOP.ASTReference;
+import ast.String.ASTString;
 import ast.Struct.*;
 import symbols.Env;
-import types.Type;
+import values.FunValue;
 import types.TypingException;
 import values.*;
+
+import java.util.ArrayList;
 
 
 public class Interpreter implements Exp.Visitor<Value,Env<Value>> {
@@ -166,12 +169,26 @@ public class Interpreter implements Exp.Visitor<Value,Env<Value>> {
 
 	@Override
 	public Value visit(ASTFun e, Env<Value> env) throws TypingException {
-		Env<Value> current = env.beginScope();
-		for (FunArgs<String, Type> arg  : e.args) {
-//			Value v1 = arg.accept(this,current);
-//			current.bind(binding.var.var, v1);
+		return new FunValue(e.args, e.body, e.returnType,env);
+	}
+
+	@Override
+	public Value visit(ASTFunCall e, Env<Value> env) throws TypingException {
+		FunValue fun = (FunValue) e.funName.accept(this,env);
+		Exp body = fun.getBody();
+		Env<Value> functionEnv = fun.getEnvironment();
+		ArrayList<FunArgs> parameters = fun.getArgs();
+		for(int i = 0; i < parameters.size(); i++){
+			String parameter = parameters.get(i).name();
+			Value value = e.args.get(i).accept(this,env);
+			functionEnv.bind(parameter,value);
 		}
-		return null;
+		return body.accept(this,functionEnv);
+	}
+
+	@Override
+	public Value visit(ASTString e, Env<Value> env) throws TypingException {
+		return new StringValue(e.value);
 	}
 
 	public static Value interpret(Exp e, Env<Value> env) throws TypingException {

@@ -3,6 +3,8 @@ package compiler;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
+
 import ast.*;
 import ast.BoolOP.ASTAnd;
 import ast.BoolOP.ASTBool;
@@ -13,8 +15,10 @@ import ast.RefOP.ASTAssign;
 import ast.RefOP.ASTBinding;
 import ast.RefOP.ASTDereference;
 import ast.RefOP.ASTReference;
+import ast.String.ASTString;
 import ast.Struct.*;
 import symbols.Frame;
+import symbols.FunctionInterface;
 import target.*;
 import types.*;
 import values.FrameValue;
@@ -272,29 +276,24 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 	@Override
 	public Type visit(ASTPrint e, Frame env) throws TypingException {
 		Type type = e.e1.accept(this, env);
-		if(type == IntType.singleton || type == BoolType.singleton){
-			block.addInstruction(new CustomInstruction("getstatic java/lang/System/out Ljava/io/PrintStream;",null));
-			block.addInstruction(new ISwap());
-			block.addInstruction(new CustomInstruction("invokestatic java/lang/String/valueOf(I)Ljava/lang/String;",null));
-			block.addInstruction(new IPrint());
+		block.addInstruction(new CustomInstruction("getstatic java/lang/System/out Ljava/io/PrintStream;",null));
+		block.addInstruction(new ISwap());
+		if(type == IntType.singleton || type == BoolType.singleton) {
+			block.addInstruction(new CustomInstruction("invokestatic java/lang/String/valueOf(I)Ljava/lang/String;", null));
 		}
-		else
-			throw new TypingException("Type not supported for println");
+		block.addInstruction(new IPrint());
 		return UnitType.singleton;
 	}
 
 	@Override
 	public Type visit(ASTPrintln e, Frame env) throws TypingException {
 		Type type = e.e1.accept(this, env);
-		System.out.println(type.toString());
-		if(type == IntType.singleton || type == BoolType.singleton){
-			block.addInstruction(new CustomInstruction("getstatic java/lang/System/out Ljava/io/PrintStream;",null));
-			block.addInstruction(new ISwap());
-			block.addInstruction(new CustomInstruction("invokestatic java/lang/String/valueOf(I)Ljava/lang/String;",null));
-			block.addInstruction(new IPrintln());
+		block.addInstruction(new CustomInstruction("getstatic java/lang/System/out Ljava/io/PrintStream;",null));
+		block.addInstruction(new ISwap());
+		if(type == IntType.singleton || type == BoolType.singleton) {
+			block.addInstruction(new CustomInstruction("invokestatic java/lang/String/valueOf(I)Ljava/lang/String;", null));
 		}
-		else
-			throw new TypingException("Type not supported for println");
+		block.addInstruction(new IPrintln());
 		return UnitType.singleton;
 	}
 
@@ -330,9 +329,21 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 	   return (elseType==null) || (ifType!=elseType) ?  UnitType.singleton: ifType;
 	}
 
+
 	@Override
 	public Type visit(ASTFun e, Frame env) throws TypingException {
 		return null;
+	}
+
+	@Override
+	public Type visit(ASTFunCall e, Frame env) throws TypingException {
+		return null;
+	}
+
+	@Override
+	public Type visit(ASTString e, Frame env) throws TypingException {
+		block.addInstruction(new ILdc("\""+e.value+"\""));
+		return StringType.singleton;
 	}
 
 

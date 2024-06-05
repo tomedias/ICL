@@ -79,13 +79,15 @@ public interface ParserConstants {
   /** RegularExpression Id. */
   int COMMA = 38;
   /** RegularExpression Id. */
-  int INT = 39;
+  int STRING = 39;
   /** RegularExpression Id. */
-  int DIGIT = 40;
+  int INT = 40;
   /** RegularExpression Id. */
-  int ID = 41;
+  int DIGIT = 41;
   /** RegularExpression Id. */
-  int LETTER = 42;
+  int ID = 42;
+  /** RegularExpression Id. */
+  int LETTER = 43;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -131,6 +133,7 @@ public interface ParserConstants {
     "\"fn\"",
     "\"->\"",
     "\",\"",
+    "<STRING>",
     "<INT>",
     "<DIGIT>",
     "<ID>",

@@ -18,8 +18,8 @@ public class InterpreterConsole {
     public static void main(String[] args) throws IOException {
 		Parser parser = null;
 		try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-			String filename = in.readLine();
+			//BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+			String filename = "src/main/test";
 			parser = new Parser(new BufferedReader(new FileReader(filename)));
 			Env<Value> env = new Env<>();
 			Exp e = parser.Start();

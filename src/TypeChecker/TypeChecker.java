@@ -10,9 +10,12 @@ import ast.RefOP.ASTAssign;
 import ast.RefOP.ASTBinding;
 import ast.RefOP.ASTDereference;
 import ast.RefOP.ASTReference;
+import ast.String.ASTString;
 import ast.Struct.*;
 import symbols.Env;
 import types.*;
+
+import java.util.ArrayList;
 
 
 public class TypeChecker implements Exp.Visitor<Type,Env<Type>>{
@@ -210,7 +213,34 @@ public class TypeChecker implements Exp.Visitor<Type,Env<Type>>{
 
     @Override
     public Type visit(ASTFun e, Env<Type> env) throws TypingException {
-        return null;
+        ArrayList<Type> types = new ArrayList<>();
+        for(FunArgs arg : e.args){
+           types.add(arg.type());
+        }
+        return new FunType(e.returnType,types);
+    }
+
+    @Override
+    public Type visit(ASTFunCall e, Env<Type> env) throws TypingException {
+        Type funType = e.funName.accept(this,env);
+        if(!(funType instanceof FunType)){
+            throw new TypingException("Type error: expected FunType");
+        }
+        FunType fun = (FunType) funType;
+        if(fun.args.size() != e.args.size()){
+            throw new TypingException("Type error: expected same number of arguments");
+        }
+        for(int i = 0; i < e.args.size(); i++){
+            if(fun.args.get(i) != e.args.get(i).accept(this,env)){
+                throw new TypingException("Type error: expected same type of arguments");
+            }
+        }
+        return fun.returnType;
+    }
+
+    @Override
+    public Type visit(ASTString e, Env<Type> env) throws TypingException {
+        return StringType.singleton;
     }
 
     public static Type typeChecker(Exp e, Env<Type> env) throws TypingException {
