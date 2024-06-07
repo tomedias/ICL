@@ -17,16 +17,7 @@ public class ASTLet implements Exp {
         this.e2 = e2;
     }
 
-    @Override
-    public Value eval(Env<Value> prev) {
 
-        Env<Value> current = prev.beginScope();
-        for (ASTBinding binding : bindings) {
-            Value v1 = binding.eval(current);
-            current.bind(binding.var.var, v1);
-        }
-        return e2.eval(current);
-    }
 
     @Override
     public <T,E> T accept(Visitor<T,E> v,E env) throws TypingException {

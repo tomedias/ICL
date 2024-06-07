@@ -1,10 +1,11 @@
-package ast;
+package ast.Struct;
 
+import ast.Exp;
 import symbols.Env;
 import types.TypingException;
 import values.Value;
 
-public class ASTDotComma implements Exp{
+public class ASTDotComma implements Exp {
     public Exp arg1;
     public Exp arg2;
 
@@ -13,10 +14,7 @@ public class ASTDotComma implements Exp{
         this.arg2 = arg2;
     }
 
-    @Override
-    public Value eval(Env<Value> env) {
-        return null;
-    }
+
 
     @Override
     public <T, E> T accept(Visitor<T, E> v, E env) throws TypingException {

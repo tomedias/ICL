@@ -12,10 +12,7 @@ public class ASTPrintln implements Exp {
         this.e1 = e1;
     }
 
-    @Override
-    public Value eval(Env<Value> env) {
-        return null;
-    }
+
 
     @Override
     public <T, E> T accept(Visitor<T, E> v, E env) throws TypingException {

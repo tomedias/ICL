@@ -10,10 +10,7 @@ public class ASTBool implements Exp {
         this.value = value;
     }
 
-    @Override
-    public Value eval(Env<Value> env) {
-        return new BoolValue(value);
-    }
+
 
     @Override
     public <T,E> T accept(Visitor<T,E> v,E env) {

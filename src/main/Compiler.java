@@ -11,10 +11,7 @@ import symbols.Frame;
 import types.TypingException;
 
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 
 import java.util.ArrayList;
 
@@ -22,9 +19,9 @@ public class Compiler {
     public static void main(String[] args) throws IOException {
         Parser parser = null;
         try {
-//            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-//            String filename = in.readLine();
-            File file = new File("main/test");
+            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+            String filename = in.readLine();
+            File file = new File(filename);
             parser = new Parser(new BufferedReader(new FileReader(file)));
 
             Frame env = new Frame(0, new ArrayList<>());

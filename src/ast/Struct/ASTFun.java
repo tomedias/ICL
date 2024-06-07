@@ -1,7 +1,6 @@
 package ast.Struct;
 
 import ast.Exp;
-import ast.FunArgs;
 import symbols.Env;
 import types.Type;
 import types.TypingException;
@@ -21,10 +20,7 @@ public class ASTFun implements Exp {
         this.returnType = returnType;
     }
 
-    @Override
-    public Value eval(Env<Value> env) {
-        return null;
-    }
+
 
     @Override
     public <T, E> T accept(Visitor<T, E> v, E env) throws TypingException, TypingException {

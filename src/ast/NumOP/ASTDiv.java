@@ -15,10 +15,7 @@ public class ASTDiv implements Exp {
 		this.arg2 = arg2;
 	}
 
-	@Override
-	public Value eval(Env<Value> env) {
-		return new IntValue(((IntValue)arg1.eval(env)).getValue() / ((IntValue)arg2.eval(env)).getValue());
-	}
+
 
 	@Override
 	public <T,E> T accept(Visitor<T,E> v,E env) throws TypingException {

@@ -13,10 +13,7 @@ public class ASTEqual implements Exp {
         this.arg2 = arg2;
     }
 
-    @Override
-    public Value eval(Env<Value> env) {
-        return new BoolValue(arg1.eval(env).equals(arg2.eval(env)));
-    }
+
 
     @Override
     public <T,E> T accept(Visitor<T,E> v,E env) throws TypingException {

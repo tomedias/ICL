@@ -46,8 +46,7 @@ public interface Exp {
 		public T visit(ASTFunCall e, E env) throws TypingException;
 		public T visit(ASTString e, E env) throws TypingException;
 	}
-	
-    public Value eval(Env<Value> env);
+
 
 	public <T,E> T accept(Visitor<T,E> v,E env) throws TypingException, TypingException;
 

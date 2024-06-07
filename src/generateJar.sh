@@ -10,10 +10,3 @@ jar cfm Interpreter.jar manifest_interpreter.txt **/*.class
 jar cfm Typechecker.jar manifest_typechecker.txt **/*.class
 jar cfm Compiler.jar manifest_compiler.txt **/*.class
 
-echo "Compiled"
-java -jar Compiler.jar
-rm **/*.class
-cd output
-java -jar jasmin.jar out.j *.j
-java Demo
-cd ..

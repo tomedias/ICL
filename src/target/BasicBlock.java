@@ -30,8 +30,8 @@ public class BasicBlock {
 		return block.toString();
 	}
 
-	public DelayedOp delayEmit() {
-		DelayedOp delayed = new DelayedOp(instructions.size());
+	public LateInstruction delayOperation() {
+		LateInstruction delayed = new LateInstruction(this, instructions.size());
 		instructions.add(new EmptyInstruction());
 		return delayed;
 	}
@@ -53,18 +53,5 @@ public class BasicBlock {
 
 	}
 
-	public class DelayedOp {
-		private final int i;
 
-		private DelayedOp(int i) {
-			this.i = i;
-		}
-
-		public void set(Instruction opcode) {
-			instructions.set(i, opcode);
-		}
-	}
-	
-	
-	
 }

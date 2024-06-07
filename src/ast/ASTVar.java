@@ -14,11 +14,6 @@ public class ASTVar implements Exp{
     }
 
     @Override
-    public Value eval(Env<Value> env) {
-        return env.find(var);
-    }
-
-    @Override
     public <T,E> T accept(Visitor<T,E> visitor,E env) throws TypingException {
         return visitor.visit(this,env);
     }

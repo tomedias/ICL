@@ -13,11 +13,7 @@ public class ASTDereference implements Exp {
         this.arg1 = arg1;
     }
 
-    @Override
-    public Value eval(Env<Value> env) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'eval'");
-    }
+
 
     @Override
     public <T, E> T accept(Visitor<T, E> v, E env) throws TypingException {

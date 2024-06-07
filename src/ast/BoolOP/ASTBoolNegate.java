@@ -12,11 +12,7 @@ public class ASTBoolNegate implements Exp {
     public ASTBoolNegate(Exp arg1) {
         this.arg1 = arg1;
     }
-    @Override
-    public Value eval(Env<Value> env) {
-        BoolValue var = (BoolValue)arg1.eval(env);
-        return new BoolValue(!var.getValue());
-    }
+
 
     @Override
     public <T,E> T accept(Visitor<T,E> v,E env) throws TypingException {

@@ -15,10 +15,6 @@ public class ASTAnd implements Exp {
         this.arg2 = arg2;
     }
 
-    @Override
-    public Value eval(Env<Value> env) {
-        return new BoolValue(((BoolValue)arg1.eval(env)).getValue() && ((BoolValue)arg2.eval(env)).getValue());
-    }
 
     @Override
     public <T,E> T accept(Visitor<T,E> v,E env) throws TypingException {

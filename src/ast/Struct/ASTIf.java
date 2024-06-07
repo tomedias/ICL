@@ -16,10 +16,7 @@ public class ASTIf implements Exp {
         this.elseBranch = elseBranch;
     }
 
-    @Override
-    public Value eval(Env<Value> env) {
-        return null;
-    }
+
 
     @Override
     public <T, E> T accept(Visitor<T, E> v, E env) throws TypingException {

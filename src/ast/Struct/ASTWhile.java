@@ -14,10 +14,7 @@ public class ASTWhile implements Exp {
         this.body = body;
     }
 
-    @Override
-    public Value eval(Env<Value> env) {
-        return null;
-    }
+
 
     @Override
     public <T, E> T accept(Visitor<T, E> v, E env) throws TypingException {

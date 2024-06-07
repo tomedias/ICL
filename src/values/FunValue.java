@@ -1,7 +1,7 @@
 package values;
 
 import ast.Exp;
-import ast.FunArgs;
+import ast.Struct.FunArgs;
 import symbols.Env;
 import types.Type;
 

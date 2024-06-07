@@ -14,11 +14,7 @@ public class ASTAssign implements Exp {
         this.arg2 = arg2;
     }
 
-    @Override
-    public Value eval(Env<Value> env) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'eval'");
-    }
+
 
     @Override
     public <T, E> T accept(Visitor<T, E> v, E env) throws TypingException {

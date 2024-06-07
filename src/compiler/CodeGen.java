@@ -83,9 +83,9 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 	public Type visit(ASTEqual e,Frame env) throws TypingException {
 		e.arg1.accept(this, env);
 		e.arg2.accept(this, env);
-		BasicBlock.DelayedOp gotoIf = block.delayEmit();
+		LateInstruction gotoIf = block.delayOperation();
 		block.addInstruction(new NegativeIBool());
-		BasicBlock.DelayedOp skipIf = block.delayEmit();
+		LateInstruction skipIf = block.delayOperation();
 		String label = block.emitLabel();
 		block.addInstruction(new IBoolPush());
 		gotoIf.set(new IEqual(label));
@@ -97,9 +97,9 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 	public Type visit(ASTLess e, Frame env) throws TypingException {
 		e.arg1.accept(this, env);
 		e.arg2.accept(this, env);
-		BasicBlock.DelayedOp gotoIf = block.delayEmit();
+		LateInstruction gotoIf = block.delayOperation();
 		block.addInstruction(new NegativeIBool());
-		BasicBlock.DelayedOp skipIf = block.delayEmit();
+		LateInstruction skipIf = block.delayOperation();
 		String label = block.emitLabel();
 		block.addInstruction(new IBoolPush());
 		gotoIf.set(new ILess(label));
@@ -111,9 +111,9 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 	public Type visit(ASTGreater e, Frame env) throws TypingException {
 		e.arg1.accept(this, env);
 		e.arg2.accept(this, env);
-		BasicBlock.DelayedOp gotoIf = block.delayEmit();
+		LateInstruction gotoIf = block.delayOperation();
 		block.addInstruction(new NegativeIBool());
-		BasicBlock.DelayedOp skipIf = block.delayEmit();
+		LateInstruction skipIf = block.delayOperation();
 		String label = block.emitLabel();
 		block.addInstruction(new IBoolPush());
 		gotoIf.set(new IGreater(label));
@@ -126,9 +126,9 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 	public Type visit(ASTNotEqual e,Frame env) throws TypingException {
 		e.arg1.accept(this, env);
 		e.arg2.accept(this, env);
-		BasicBlock.DelayedOp gotoIf = block.delayEmit();
+		LateInstruction gotoIf = block.delayOperation();
 		block.addInstruction(new NegativeIBool());
-		BasicBlock.DelayedOp skipIf = block.delayEmit();
+		LateInstruction skipIf = block.delayOperation();
 		String label = block.emitLabel();
 		block.addInstruction(new IBoolPush());
 		gotoIf.set(new INotEqual(label));
@@ -239,13 +239,13 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 
 	@Override
 	public Type visit(ASTReference e, Frame env) throws TypingException {
-		BasicBlock.DelayedOp newRef = block.delayEmit();
+		LateInstruction newRef = block.delayOperation();
 		block.addInstruction(new IDup());
-		BasicBlock.DelayedOp invokespecial = block.delayEmit();
+		LateInstruction invokespecial = block.delayOperation();
 		block.addInstruction(new IDup());
 		Type type = e.arg1.accept(this,env);
-		String class_name= "";
-		String field_type = "";
+		String class_name;
+		String field_type;
 		if(type == IntType.singleton || type == BoolType.singleton){
 			class_name = "ref_int";
 			field_type = "I";
@@ -263,8 +263,8 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 	public Type visit(ASTDereference e, Frame env) throws TypingException {
 		Type type = e.arg1.accept(this,env);
 		System.out.println(type.toString());
-		String class_name= "";
-		String field_type = "";
+		String class_name;
+		String field_type;
 		if(type == IntType.singleton || type == BoolType.singleton){
 			class_name = "ref_int";
 			field_type = "I";
@@ -287,7 +287,7 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 	public Type visit(ASTWhile e, Frame env) throws TypingException {
 		String loop_label = block.emitLabel();
 		e.condition.accept(this, env);
-		BasicBlock.DelayedOp loopIf = block.delayEmit();
+		LateInstruction loopIf = block.delayOperation();
 		Type type = e.body.accept(this, env);
 		if(type != UnitType.singleton) {
 			block.addInstruction(new IPop());
@@ -300,46 +300,45 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 
 	@Override
 	public Type visit(ASTPrint e, Frame env) throws TypingException {
-		Type type = e.e1.accept(this, env);
-		block.addInstruction(new CustomInstruction("getstatic java/lang/System/out Ljava/io/PrintStream;",null));
-		block.addInstruction(new ISwap());
-		if(type == IntType.singleton || type == BoolType.singleton) {
-			block.addInstruction(new CustomInstruction("invokestatic java/lang/String/valueOf(I)Ljava/lang/String;", null));
-		}
+		InvokePrint(env, e.e1);
 		block.addInstruction(new IPrint());
 		return UnitType.singleton;
 	}
 
 	@Override
 	public Type visit(ASTPrintln e, Frame env) throws TypingException {
-		Type type = e.e1.accept(this, env);
+		InvokePrint(env, e.e1);
+		block.addInstruction(new IPrintln());
+		return UnitType.singleton;
+	}
+
+	private void InvokePrint(Frame env, Exp e1) throws TypingException {
+		Type type = e1.accept(this, env);
 		block.addInstruction(new CustomInstruction("getstatic java/lang/System/out Ljava/io/PrintStream;",null));
 		block.addInstruction(new ISwap());
 		if(type == IntType.singleton || type == BoolType.singleton) {
 			block.addInstruction(new CustomInstruction("invokestatic java/lang/String/valueOf(I)Ljava/lang/String;", null));
 		}
-		block.addInstruction(new IPrintln());
-		return UnitType.singleton;
 	}
 
 	@Override
 	public Type visit(ASTIf e, Frame env) throws TypingException {
 		e.condition.accept(this,env);
 
-		BasicBlock.DelayedOp gotoIf= block.delayEmit();
+		LateInstruction gotoIf= block.delayOperation();
 		Type elseType =null;
-		BasicBlock.DelayedOp popElse = null;
+		LateInstruction popElse = null;
 
 	    if(e.elseBranch != null) {
 			elseType = e.elseBranch.accept(this,env);
-			popElse = block.delayEmit();
+			popElse = block.delayOperation();
 			popElse.set(new IComment(" pop else"));
 		}
-		BasicBlock.DelayedOp goEnd = block.delayEmit();
+		LateInstruction goEnd = block.delayOperation();
 		String label = block.emitLabel();
 		gotoIf.set(new IGoToIfTrue(label));
 		Type ifType = e.thenBranch.accept(this,env);
-		BasicBlock.DelayedOp popIf = block.delayEmit();
+		LateInstruction popIf = block.delayOperation();
 		popIf.set(new IComment(" pop if"));
 		String end = block.emitLabel();
 		goEnd.set(new IGoTo(end));
@@ -483,20 +482,7 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 				.limit stack 256
 				""",f.id(),f.functionInterface().name(),f.frame().getName(),String.join("",f.functionInterface().parameterType()),f.functionInterface().retType(), Math.max(f.functionInterface().parameterType().size()+1,10));
 				out.println(dump);
-
-				FunctionManager.FunctionInterface functionInterface = f.functionInterface();
-				StringBuilder loadParams = new StringBuilder();
-				for(int i = 0; i < functionInterface.parameterType().size(); i++){
-					String type = functionInterface.parameterType().get(i);
-					loadParams.append("dup\n");
-					if(type.equals("I")) {
-						loadParams.append(String.format("iload %d\n", i + 1));
-					}else{
-						loadParams.append(String.format("aload %d\n", i + 1));
-					}
-					loadParams.append(String.format("putfield %s/v%d %s\n", f.functionFrame().getName(), i, type));
-				}
-				loadParams.append(String.format("astore_%d",1));
+				StringBuilder loadParams = getLoadParams(f);
 				BasicBlock block = codeGen(f.body(),f.functionFrame());
 				out.println("new "+f.functionFrame().getName());
 				out.println("dup");
@@ -521,6 +507,23 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
                 throw new RuntimeException(e);
             }
         }
+	}
+
+	private static StringBuilder getLoadParams(FunctionManager.Function f) {
+		FunctionManager.FunctionInterface functionInterface = f.functionInterface();
+		StringBuilder loadParams = new StringBuilder();
+		for(int i = 0; i < functionInterface.parameterType().size(); i++){
+			String type = functionInterface.parameterType().get(i);
+			loadParams.append("dup\n");
+			if(type.equals("I")) {
+				loadParams.append(String.format("iload %d\n", i + 1));
+			}else{
+				loadParams.append(String.format("aload %d\n", i + 1));
+			}
+			loadParams.append(String.format("putfield %s/v%d %s\n", f.functionFrame().getName(), i, type));
+		}
+		loadParams.append(String.format("astore_%d",1));
+		return loadParams;
 	}
 
 	public static void dump_interfaces(){

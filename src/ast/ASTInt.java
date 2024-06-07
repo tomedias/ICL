@@ -15,10 +15,7 @@ public class ASTInt implements Exp {
         return value;
     }
 
-    @Override
-    public Value eval(Env<Value> env) {
-        return new IntValue(value);
-    }
+
 
     @Override
     public <T,E> T accept(Visitor<T,E> v,E env) {

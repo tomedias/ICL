@@ -54,10 +54,7 @@ public class ASTString implements Exp {
         }
         return sb.toString();
     }
-    @Override
-    public Value eval(Env<Value> env) {
-        return null;
-    }
+
 
     @Override
     public <T, E> T accept(Visitor<T, E> v, E env) throws TypingException, TypingException {

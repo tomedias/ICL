@@ -15,12 +15,7 @@ public class ASTBinding implements Exp {
         this.e1 = e1;
     }
 
-    @Override
-    public Value eval(Env<Value> prev) {
-        Env<Value> current = prev.beginScope();
-        current.bind(var.var, e1.eval(prev));
-        return e1.eval(current);
-    }
+
 
 
     @Override
