@@ -332,14 +332,14 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 	    if(e.elseBranch != null) {
 			elseType = e.elseBranch.accept(this,env);
 			popElse = block.delayOperation();
-			popElse.set(new IComment(" pop else"));
+
 		}
 		LateInstruction goEnd = block.delayOperation();
 		String label = block.emitLabel();
 		gotoIf.set(new IGoToIfTrue(label));
 		Type ifType = e.thenBranch.accept(this,env);
 		LateInstruction popIf = block.delayOperation();
-		popIf.set(new IComment(" pop if"));
+
 		String end = block.emitLabel();
 		goEnd.set(new IGoTo(end));
 		if(!ifType.equals(elseType) && !ifType.equals(UnitType.singleton)){
