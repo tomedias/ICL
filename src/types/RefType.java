@@ -13,6 +13,7 @@ public class RefType implements Type{
 	public RefType(Type type) {
 		this.refType = type;
 	}
+
 	
 	@Override
 	public boolean equals(Object obj) {

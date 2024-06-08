@@ -22,6 +22,8 @@ public class Compiler {
             BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
             String filename = in.readLine();
             File file = new File(filename);
+            System.out.println("File path: " + file.getAbsolutePath());
+            System.out.println("File name: " + file.exists());
             parser = new Parser(new BufferedReader(new FileReader(file)));
 
             Frame env = new Frame(0, new ArrayList<>());
