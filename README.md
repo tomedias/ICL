@@ -1,45 +1,57 @@
 # Interpretation and compilation of Programming Languages 2023-24
 
-## ICL Project Part 1
+## ICL Project Part 2
 
 This project contains:
 
-- The interpeter for our language
+- The interpreter for our language
 - The type-checker for our language
-- All language features except functions.
+- The compiler for our language
+- All mandatory features
+- Strings with escape characters
 
 ### Running the Program
 
-It is expected that you have at least java 8 installed to run this program
+It is expected that you have at least Java 8 installed to run this program
 
-There are three java programs:
+We compile the program by running:
 
-- Console.jar: Where before executing an operation the Type-Checker is ran to garantee there are no errors in the code written, and then it runs the Interpreter.
 
-- Typechecker.jar: Where only the Typechecker runs.
+```bash                                                      
+./generate.sh # Run this command to generate all jars      
+```
+
+This creates the following jars:
+
+- Console.jar: Where before executing an operation the Type-Checker is run to guarantee there are no errors in the code written, and then it runs the Interpreter.
+
+- Typechecker.jar: Where only the TypeChecker runs.
 
 - Interpreter.jar: Where only the Interpreter runs.
 
-You can generate all jars again by running:
+- Compiler.jar: Where only the Compiler runs.
+
+We created a special script for running the compiler, which is:
 
 ```bash
-./generate.sh
+./runCompiler.sh # Run this to run the compiler and generate the classes on output/compiled
 ```
 
-To actually run the generated code you will need to
+To run the other jars manually:
 
 ```bash
 java -jar <Program>.jar
 ```
+#### All programs expect a file path as an user input (not as an argument)              
 
 ### Parsing
 
-Currently the program is able to parse the following forms expression:
+Currently, the program is able to parse the following expressions:
 
 ```
 semicol ::= struct (';' semicol)?
 
-struct ::= decl | whiledo | println | print | ifthenelse | logic
+struct ::= decl | whiledo | println | print | ifthenelse | logic | fun | funcall
 
 decl ::= 'let' ( id '=' struct )+ 'in' struct
 
@@ -49,7 +61,11 @@ println ::= 'println' struct
 
 print ::= 'print' struct
 
-ifthenelse ::= 'if' struct 'then' semicol ('else' semicol)? 'end' |
+fun ::= 'fun' '(' id ':' type (',' id ':' type)* ')' '->' semicol ':' type 'end'
+
+funcall ::= id '(' struct (',' struct)* ')'
+
+ifthenelse ::= 'if' struct 'then' semicol ('else' semicol)? 'end' 
 
 logic ::= boolop | logic '&&' logic | logic '||' logic | '~' logic
 
@@ -62,17 +78,18 @@ bool ::= true | false
 num ::= ['1'-'9']\['0'-'9'\]*
 
 id ::= ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9","_"] )*
+
+string ::= "\"" ("\\\"" | ~["\""])* "\""
+
+type ::= 'int' | 'bool' | 'string' | 'void' | ref_int | ref_ref | ref_bool | ref_string
 ```
 
 ### Architecture
 
 We implemented the functionality using visitor style
 
-### Whats left to do
+### What's left to do
 
-Currently our language doesn't support type casting, in the future it would be nice to support that.
-Currently our language only supports Integer types, for math operations it would be nice to add floats or doubles.
+Currently, our language doesn't support type casting, in the future it would be nice to support that.
+Currently, our language only supports Integer types, for math operations it would be nice to add floats or doubles.
 
-### Reading from files
-
-Later we would like to pass a file as a argument to the main function and if the file exists we would like to interpret it so we can "Save programs"
