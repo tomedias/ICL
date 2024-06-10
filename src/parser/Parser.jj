@@ -177,7 +177,7 @@ Exp Term() :
 }
 
 Exp Fact() :
-{ Token x; Exp e,e1;ArrayList<Exp> args = new ArrayList<>();}
+{ Token x; Exp e,e1;ArrayList<Exp> args = new ArrayList<Exp>();}
 {
   x = <Num>
 {
@@ -231,7 +231,7 @@ x = <ID>
 |
 <FN> <LPAR>
 {
-    ArrayList<FunArgs> params= new ArrayList<>();
+    ArrayList<FunArgs> params= new ArrayList<FunArgs>();
     Exp body;
     Type type;
     Type retType;

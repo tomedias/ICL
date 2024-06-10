@@ -4,6 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 import ast.*;
 import ast.BoolOP.ASTAnd;
@@ -449,8 +451,14 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 			}else{
 				out.println(".field public SL L" + frame.getPrev().getName() + ";");
 			}
+			ArrayList<String> types = new ArrayList<>();
 			for (int i = 0; i < frame.getVars().size(); i++) {
-				out.println(".field public v" + i + " " + frame.getVars().get(i).getType().getJvmType());
+				types.add(frame.getVars().get(i).getType().getJvmType());
+			}
+			Collections.sort(types);
+			for (int i = 0; i < types.size(); i++) {
+				out.println(".field public v" + i + " " +types.get(i));
+
 			}
 			out.println(".method public <init>()V");
 			out.println("aload_0");

@@ -3,7 +3,7 @@ package values;
 import symbols.Frame;
 import types.Type;
 
-public class FrameValue implements Value{
+public class FrameValue implements Value,Comparable<FrameValue>{
     private Frame frame;
     private int var_id;
     private Type type;
@@ -29,5 +29,10 @@ public class FrameValue implements Value{
 
     public Type getType() {
         return type;
+    }
+
+    @Override
+    public int compareTo(FrameValue o) {
+        return var_id - o.var_id;
     }
 }
