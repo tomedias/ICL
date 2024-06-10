@@ -40,4 +40,9 @@ public class FunValue implements Value {
     public String toString() {
         return "fun";
     }
+
+    @Override
+    public Type getType() {
+        return returnType;
+    }
 }

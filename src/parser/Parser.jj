@@ -67,7 +67,7 @@ TOKEN :
 < INT : (< DIGIT >)+ >
 | < #DIGIT : [ "0"-"9" ] >
 | < ID : (< LETTER >)+ >
-| < #LETTER : [ "a"-"z", "A"-"Z" ] >
+| < #LETTER : [ "a"-"z", "A"-"Z","_" ] >
 
 }
 

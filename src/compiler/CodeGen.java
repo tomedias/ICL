@@ -264,7 +264,6 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 	@Override
 	public Type visit(ASTDereference e, Frame env) throws TypingException {
 		Type type = e.arg1.accept(this,env);
-		System.out.println(type.toString());
 		String class_name;
 		String field_type;
 		if(type == IntType.singleton || type == BoolType.singleton){
@@ -500,7 +499,7 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 				out.println("getfield closure_"+f.id()+"/SL L"+f.frame().getName()+";");
 				out.println("putfield "+f.functionFrame().getName()+"/SL L"+f.frame().getName()+";");
 				out.println(loadParams.toString());
-				out.println(block.toString());
+				out.print(block.toString());
 				if(f.functionInterface().retType().equals("I")) {
 					out.println("ireturn");
 				}else if(f.functionInterface().retType().equals("V")){

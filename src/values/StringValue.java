@@ -1,5 +1,8 @@
 package values;
 
+import types.StringType;
+import types.Type;
+
 public class StringValue implements Value{
     public String value;
     public StringValue(String value){
@@ -13,5 +16,10 @@ public class StringValue implements Value{
             return value.equals(((StringValue)obj).value);
         }
         return false;
+    }
+
+    @Override
+    public Type getType() {
+        return StringType.singleton;
     }
 }

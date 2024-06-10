@@ -208,7 +208,11 @@ public class TypeChecker implements Exp.Visitor<Type,Env<Type>>{
 
     @Override
     public Type visit(ASTIf e, Env<Type> env) throws TypingException {
-        return UnitType.singleton;
+        Type type = e.thenBranch.accept(this,env);
+        if(type!= e.elseBranch.accept(this,env)){
+           return UnitType.singleton;
+        }
+        return type;
     }
 
     @Override

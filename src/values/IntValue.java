@@ -1,6 +1,7 @@
 package values;
 
 import types.BoolType;
+import types.IntType;
 import types.Type;
 
 public class IntValue implements Value {
@@ -25,7 +26,7 @@ public class IntValue implements Value {
 	}
 
 	public Type getType(){
-		return BoolType.singleton;
+		return IntType.singleton;
 	}
 
 	

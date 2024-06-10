@@ -2,6 +2,7 @@ package values;
 
 import types.RefType;
 import types.Type;
+import types.UnitType;
 
 public class UnitValue implements Value{
 
@@ -22,4 +23,8 @@ public class UnitValue implements Value{
     }
 
 
+    @Override
+    public Type getType() {
+        return UnitType.singleton;
+    }
 }

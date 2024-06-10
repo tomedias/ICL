@@ -29,5 +29,8 @@ public class RefValue implements Value{
 	}
 
 
-
+	@Override
+	public Type getType() {
+		return new RefType(value.getType());
+	}
 }

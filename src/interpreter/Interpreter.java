@@ -162,7 +162,7 @@ public class Interpreter implements Exp.Visitor<Value,Env<Value>> {
 			e.thenBranch.accept(this,env);
 		}
 		else{
-			e.elseBranch.accept(this,env);
+			return e.elseBranch.accept(this,env);
 		}
 		return UnitValue.singleton;
 	}

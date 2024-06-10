@@ -1,5 +1,7 @@
 package values;
 
-public interface Value {
+import types.Type;
 
+public interface Value {
+    Type getType();
 }
