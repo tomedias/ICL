@@ -1,4 +1,4 @@
-
+#!/bin/bash
 mkdir -p output/compiled
 java -jar Compiler.jar
 cd output/compiled
