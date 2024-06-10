@@ -29,6 +29,8 @@ public interface Exp {
 		public T visit(ASTLess e, E env) throws TypingException;
 		public T visit(ASTGreater e, E env) throws TypingException;
 		public T visit(ASTNotEqual e,E env) throws TypingException;
+		public T visit(ASTLessEq e, E env) throws TypingException;
+		public T visit(ASTGreaterEq e, E env) throws TypingException;
 		public T visit(ASTAnd e, E env) throws TypingException;
 		public T visit(ASTOr e, E env) throws TypingException;
 		public T visit(ASTLet e, E env) throws TypingException;

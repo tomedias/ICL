@@ -77,6 +77,16 @@ public class Interpreter implements Exp.Visitor<Value,Env<Value>> {
 	}
 
 	@Override
+	public Value visit(ASTLessEq e, Env<Value> env) throws TypingException {
+		return new BoolValue(((IntValue)(e.arg1.accept(this, env))).getValue() <= ((IntValue)(e.arg2.accept(this, env))).getValue());
+	}
+
+	@Override
+	public Value visit(ASTGreaterEq e, Env<Value> env) throws TypingException {
+		return new BoolValue(((IntValue)(e.arg1.accept(this, env))).getValue() >= ((IntValue)(e.arg2.accept(this, env))).getValue());
+	}
+
+	@Override
 	public BoolValue visit(ASTAnd e, Env<Value> env) throws TypingException {
 		return new BoolValue(((BoolValue)(e.arg1.accept(this, env))).getValue() && ((BoolValue)(e.arg1.accept(this, env))).getValue());
 	}

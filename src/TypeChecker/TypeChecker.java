@@ -119,6 +119,26 @@ public class TypeChecker implements Exp.Visitor<Type,Env<Type>>{
     }
 
     @Override
+    public Type visit(ASTLessEq e, Env<Type> env) throws TypingException {
+        Type arg1 = e.arg1.accept(this, env);
+        Type arg2 = e.arg2.accept(this, env);
+        if(arg1 != IntType.singleton || arg1 != arg2){
+            throw new TypingException(String.format("Operator cannot be applied to %s, %s",arg1.toString(),arg2.toString()));
+        }
+        return BoolType.singleton;
+    }
+
+    @Override
+    public Type visit(ASTGreaterEq e, Env<Type> env) throws TypingException {
+        Type arg1 = e.arg1.accept(this, env);
+        Type arg2 = e.arg2.accept(this, env);
+        if(arg1 != IntType.singleton || arg1 != arg2){
+            throw new TypingException(String.format("Operator cannot be applied to %s, %s",arg1.toString(),arg2.toString()));
+        }
+        return BoolType.singleton;
+    }
+
+    @Override
     public Type visit(ASTAnd e, Env<Type> env) throws TypingException {
         Type arg1 = e.arg1.accept(this, env);
         Type arg2 = e.arg2.accept(this, env);

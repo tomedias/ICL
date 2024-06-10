@@ -120,7 +120,6 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 		block.addInstruction(new IBoolPush());
 		gotoIf.set(new IGreater(label));
 		skipIf.set(new IGoTo(block.emitLabel()));
-
 		return BoolType.singleton;
 	}
 
@@ -134,6 +133,34 @@ public class CodeGen implements Exp.Visitor<Type, Frame>{
 		String label = block.emitLabel();
 		block.addInstruction(new IBoolPush());
 		gotoIf.set(new INotEqual(label));
+		skipIf.set(new IGoTo(block.emitLabel()));
+		return BoolType.singleton;
+	}
+
+	@Override
+	public Type visit(ASTLessEq e, Frame env) throws TypingException {
+		e.arg1.accept(this, env);
+		e.arg2.accept(this, env);
+		LateInstruction gotoIf = block.delayOperation();
+		block.addInstruction(new NegativeIBool());
+		LateInstruction skipIf = block.delayOperation();
+		String label = block.emitLabel();
+		block.addInstruction(new IBoolPush());
+		gotoIf.set(new ILessEqual(label));
+		skipIf.set(new IGoTo(block.emitLabel()));
+		return BoolType.singleton;
+	}
+
+	@Override
+	public Type visit(ASTGreaterEq e, Frame env) throws TypingException {
+		e.arg1.accept(this, env);
+		e.arg2.accept(this, env);
+		LateInstruction gotoIf = block.delayOperation();
+		block.addInstruction(new NegativeIBool());
+		LateInstruction skipIf = block.delayOperation();
+		String label = block.emitLabel();
+		block.addInstruction(new IBoolPush());
+		gotoIf.set(new IGreaterEqual(label));
 		skipIf.set(new IGoTo(block.emitLabel()));
 		return BoolType.singleton;
 	}
