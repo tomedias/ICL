@@ -88,8 +88,4 @@ type ::= 'int' | 'bool' | 'string' | 'void' | ref_int | ref_ref | ref_bool | ref
 
 We implemented the functionality using visitor style
 
-### What's left to do
-
-Currently, our language doesn't support type casting, in the future it would be nice to support that.
-Currently, our language only supports Integer types, for math operations it would be nice to add floats or doubles.
 

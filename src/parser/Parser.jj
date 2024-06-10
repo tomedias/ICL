@@ -19,7 +19,6 @@ SKIP :
 | "\n"
 | "\t"
 | "\r"
-
 }
 
 TOKEN :  /*Operators*/

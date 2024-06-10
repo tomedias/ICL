@@ -208,11 +208,15 @@ public class TypeChecker implements Exp.Visitor<Type,Env<Type>>{
 
     @Override
     public Type visit(ASTDotComma e, Env<Type> env) throws TypingException {
+        e.arg1.accept(this,env);
+        e.arg2.accept(this,env);
         return UnitType.singleton;
     }
 
     @Override
     public Type visit(ASTWhile e, Env<Type> env) throws TypingException {
+        e.condition.accept(this,env);
+        e.body.accept(this,env);
         return UnitType.singleton;
     }
 
