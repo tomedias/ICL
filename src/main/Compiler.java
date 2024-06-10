@@ -1,13 +1,16 @@
 package main;
 
+import TypeChecker.TypeChecker;
 import ast.Exp;
 import compiler.CodeGen;
 import parser.ParseException;
 import parser.Parser;
 import parser.TokenMgrError;
 
+import symbols.Env;
 import symbols.Frame;
 
+import types.Type;
 import types.TypingException;
 
 
@@ -25,9 +28,10 @@ public class Compiler {
             parser = new Parser(new BufferedReader(new FileReader(file)));
 
             Frame env = new Frame(0, new ArrayList<>());
+            Env<Type> envType = new Env<>();
             Exp e = parser.Start();
+            TypeChecker.typeChecker(e,envType);
             CodeGen.writeToFile(e,"output/out.j",env);
-
             for( Frame frame: env.getAllFrames()){
                 CodeGen.dumpFrames(frame, "output");
             }

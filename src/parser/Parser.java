@@ -212,6 +212,8 @@ e1 = new ASTOr(e1, e2);
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case LESS:
       case GREATER:
+      case LESSEQ:
+      case GREATEREQ:
       case EQUAL:
       case NOT_EQUAL:{
         ;
@@ -244,6 +246,18 @@ e1 = new ASTGreater(e1, e2);
         jj_consume_token(NOT_EQUAL);
         e2 = Expr();
 e1 = new ASTNotEqual(e1, e2);
+        break;
+        }
+      case GREATEREQ:{
+        jj_consume_token(GREATEREQ);
+        e2 = Expr();
+e1 = new ASTGreaterEq(e1, e2);
+        break;
+        }
+      case LESSEQ:{
+        jj_consume_token(LESSEQ);
+        e2 = Expr();
+e1 = new ASTLessEq(e1, e2);
         break;
         }
       default:
@@ -478,10 +492,10 @@ params.add(new FunArgs(x.image,type));
 	   jj_la1_init_1();
 	}
 	private static void jj_la1_init_0() {
-	   jj_la1_0 = new int[] {0x400000,0xce0a5800,0x0,0x0,0x1000000,0x60,0x60,0x780,0x780,0x6000,0x6000,0x18000,0x18000,0x0,0x20000,0x0,0x6025800,};
+	   jj_la1_0 = new int[] {0x1000000,0x38296000,0x0,0x0,0x4000000,0x60,0x60,0x1f80,0x1f80,0x18000,0x18000,0x60000,0x60000,0x0,0x80000,0x0,0x18096000,};
 	}
 	private static void jj_la1_init_1() {
-	   jj_la1_1 = new int[] {0x0,0x499,0x4,0x400,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x40,0x0,0x40,0x498,};
+	   jj_la1_1 = new int[] {0x0,0x1267,0x10,0x1000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x100,0x0,0x100,0x1260,};
 	}
 
   /** Constructor with InputStream. */
@@ -606,7 +620,7 @@ params.add(new FunArgs(x.image,type));
   /** Generate ParseException. */
   public ParseException generateParseException() {
 	 jj_expentries.clear();
-	 boolean[] la1tokens = new boolean[44];
+	 boolean[] la1tokens = new boolean[46];
 	 if (jj_kind >= 0) {
 	   la1tokens[jj_kind] = true;
 	   jj_kind = -1;
@@ -623,7 +637,7 @@ params.add(new FunArgs(x.image,type));
 		 }
 	   }
 	 }
-	 for (int i = 0; i < 44; i++) {
+	 for (int i = 0; i < 46; i++) {
 	   if (la1tokens[i]) {
 		 jj_expentry = new int[1];
 		 jj_expentry[0] = i;

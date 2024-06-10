@@ -28,6 +28,8 @@ TOKEN :  /*Operators*/
 | < OR: "||" >
 | < LESS: "<" >
 | < GREATER: ">" >
+| < LESSEQ: "<=" >
+| < GREATEREQ: ">=" >
 | < EQUAL: "==" >
 | < NOT_EQUAL: "!=" >
 | < Num: (["0"-"9"]) + >
@@ -155,6 +157,8 @@ Exp boolOP():
     | <LESS> e2 = Expr() { e1 = new ASTLess(e1, e2); }
     | <GREATER> e2 = Expr() { e1 = new ASTGreater(e1, e2); }
     | <NOT_EQUAL> e2 = Expr() { e1 = new ASTNotEqual(e1, e2); }
+    | <GREATEREQ> e2 = Expr() { e1 = new ASTGreaterEq(e1, e2); }
+    | <LESSEQ> e2 = Expr() { e1 = new ASTLessEq(e1, e2); }
     )*
     { return e1; }
 }

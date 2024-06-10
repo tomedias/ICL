@@ -69,7 +69,7 @@ ifthenelse ::= 'if' struct 'then' semicol ('else' semicol)? 'end'
 
 logic ::= boolop | logic '&&' logic | logic '||' logic | '~' logic
 
-boolop ::= exp | exp '<' exp | exp '>' exp | exp '==' exp | exp '!=' exp
+boolop ::= exp | exp '<' exp | exp '>' exp |  exp '<=' exp | exp '>=' exp |exp '==' exp | exp '!=' exp
 
 exp ::= id | bool | num | exp '+' exp | exp '-' exp | exp '*' exp | exp '/' exp | '-' exp | '(' exp ')' | new E | E := E | !E | E;E | ()
 

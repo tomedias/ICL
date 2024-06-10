@@ -2,10 +2,11 @@ package main;
 
 
 
+import TypeChecker.TypeChecker;
 import ast.Exp;
 import parser.*;
-import interpreter.*;
 import symbols.Env;
+import types.Type;
 import types.TypingException;
 import values.Value;
 
@@ -14,7 +15,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class InterpreterConsole {
+public class Interpreter {
     public static void main(String[] args) throws IOException {
 		Parser parser = null;
 		try {
@@ -22,8 +23,10 @@ public class InterpreterConsole {
 			String filename = in.readLine();
 			parser = new Parser(new BufferedReader(new FileReader(filename)));
 			Env<Value> env = new Env<>();
+			Env<Type> envType = new Env<>();
 			Exp e = parser.Start();
-			System.out.println(Interpreter.interpret(e,env));
+			TypeChecker.typeChecker(e,envType);
+			System.out.println(interpreter.Interpreter.interpret(e,env));
 		} catch (TokenMgrError e) {
 			System.out.println("Lexical Error!");
 			parser.ReInit(System.in);
